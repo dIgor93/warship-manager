@@ -105,7 +105,7 @@ async def websocket_endpoint(websocket: WebSocket):
             break
         await asyncio.sleep(RPS)
 
-    await app.state.data_bus.del_player(player_id)
+    app.state.data_bus.del_player(player_id)
     if websocket in app.state.sockets:
         app.state.sockets.remove(websocket)
     await websocket.close()
