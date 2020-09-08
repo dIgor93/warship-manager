@@ -1,0 +1,37 @@
+{
+  "context_id": "exp1",
+  "type": "effect",
+  "texture": "explosive.png",
+  "frames": [
+    {
+      "sx": 25,
+      "sy": 25,
+      "width": 50,
+      "height": 50
+    },
+    {
+      "sx": 125,
+      "sy": 25,
+      "width": 50,
+      "height": 50
+    },
+    {
+      "sx": 225,
+      "sy": 25,
+      "width": 50,
+      "height": 50
+    },
+    {
+      "sx": 325,
+      "sy": 25,
+      "width": 50,
+      "height": 50
+    },
+    {
+      "sx": 425,
+      "sy": 25,
+      "width": 50,
+      "height": 50
+    }
+  ]
+}

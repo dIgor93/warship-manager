@@ -1,0 +1,44 @@
+<html>
+<head>
+    <title>steel rebbot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', path='/styles/menu.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='/styles/main.css') }}" rel="stylesheet">
+    <script>
+        function redirect_to_start() {
+            let player_name = document.getElementById('name_field').value;
+            if (!player_name) {
+                let min = 65 // it is 'A'
+                let max = 90 // it is 'Z'
+                let rand_chars = []
+                let rand_arr = []
+                for (let i = 0; i < 3; i++) {
+                    rand_chars.push(String.fromCharCode(Math.floor(Math.random() * (max - min + 1)) + min))
+                    rand_arr.push(Math.floor(Math.random() * 10))
+                }
+                player_name = `${rand_chars.join('')}_${rand_arr.join('')}`
+            }
+            window.location.href = '/game?user_name=' + player_name;
+        }
+
+        window.addEventListener('keydown', function (event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                redirect_to_start()
+            }
+        });
+    </script>
+</head>
+<body style="background-image: url({{ url_for('static', path='img/space_contrust.png') }})">
+<div id="content">
+    <div id="game_name">
+        <p>Steel rebbot</p>
+    </div>
+    <label for="name_field"></label>
+    <input autofocus="autofocus" id="name_field" placeholder="input nick" type="text"/>
+    <div id="go_game" onclick="redirect_to_start()">
+        <p>Start</p>
+    </div>
+</div>
+</body>
+</html>
