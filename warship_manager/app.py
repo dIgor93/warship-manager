@@ -136,8 +136,6 @@ async def response_for_all():
                         print(f'Sending error (ConnectionClosedOK): {e}')
                     except Exception as e:
                         print(f'Sending error: {e}')
-        else:
-            print("No new message")
 
         await app.state.data_bus.send_state()
         await asyncio.sleep(RPS)

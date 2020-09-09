@@ -37,9 +37,6 @@ class DataBus:
         self.players_state[player_id]['shooting'] = shooting
 
     async def send_state(self):
-        for pl in self.players_state:
-            if self.players_state[pl].get('shooting') == 1:
-                print(time.time())
         await self.pubsub_players.execute_command("PUBLISH", 'players-state', json.dumps(self.players_state))
 
     async def get_message(self):
