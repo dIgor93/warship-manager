@@ -146,5 +146,4 @@ async def response_for_all():
 
 
 if __name__ == "__main__":
-    #uvicorn.run('warship_manager.app:app', host="localhost", port=8000, debug=False)
     uvicorn.run(app, host="localhost", port=8000, debug=False)
