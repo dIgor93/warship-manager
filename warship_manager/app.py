@@ -119,6 +119,7 @@ async def startup_event():
 async def response_for_all():
     await app.state.data_bus.init_pubsub()
     last = time.time()
+    switcher = 0
     while True:
         message = await app.state.data_bus.get_message()
         if message:
@@ -136,8 +137,11 @@ async def response_for_all():
                         print(f'Sending error (ConnectionClosedOK): {e}')
                     except Exception as e:
                         print(f'Sending error: {e}')
-
-        await app.state.data_bus.send_state()
+        if switcher == 1:
+            await app.state.data_bus.send_state()
+            switcher = 0
+        else:
+            switcher = 1
         await asyncio.sleep(RPS)
 
 

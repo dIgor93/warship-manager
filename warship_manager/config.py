@@ -1,6 +1,6 @@
 from os.path import join
 
-RPS = 0.02
+RPS = 0.016
 AREA_WIDTH = 3000
 AREA_HEIGHT = 3000
 ENEMY_COUNT = 10
