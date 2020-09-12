@@ -32,6 +32,42 @@
       "sy": 25,
       "width": 50,
       "height": 50
+    },
+    {
+      "sx": 525,
+      "sy": 25,
+      "width": 50,
+      "height": 50
+    },
+    {
+      "sx": 625,
+      "sy": 25,
+      "width": 50,
+      "height": 50
+    },
+    {
+      "sx": 725,
+      "sy": 25,
+      "width": 50,
+      "height": 50
+    },
+    {
+      "sx": 825,
+      "sy": 25,
+      "width": 50,
+      "height": 50
+    },
+    {
+      "sx": 925,
+      "sy": 25,
+      "width": 50,
+      "height": 50
+    },
+    {
+      "sx": 1025,
+      "sy": 25,
+      "width": 50,
+      "height": 50
     }
   ]
 }

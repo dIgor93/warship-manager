@@ -200,7 +200,7 @@ class Animation {
     constructor() {
         this.animation_pool = []
         this.duration = 1000
-        this.step_duration = 200
+        this.step_duration = 100
     }
 
     add_events(list_events) {
