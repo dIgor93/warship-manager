@@ -40,9 +40,13 @@ class DataBus:
         await self.pubsub_players.execute_command("PUBLISH", 'players-state', json.dumps(self.players_state))
 
     async def get_message(self):
-        raw_message = await self.pubsub.get_message(ignore_subscribe_messages=True, timeout=RPS+0.1)
-        if raw_message:
-            return self.get_dict(raw_message['data'])
+        try:
+            raw_message = await self.pubsub.get_message(ignore_subscribe_messages=True, timeout=RPS+0.1)
+        except AttributeError:
+            return None
+        else:
+            if raw_message:
+                return self.get_dict(raw_message['data'])
         return None
 
     @staticmethod
