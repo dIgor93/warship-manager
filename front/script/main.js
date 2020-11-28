@@ -12,8 +12,11 @@ let send_movement = false;
 let player_id = '';
 let player_score = 0;
 
-let back_img = new Image();
-back_img.src = `static/img/space_contrust.png`;
+let stars_layer_1 = new Image();
+stars_layer_1.src = `static/img/stars_layer_1.png`;
+
+let stars_layer_2 = new Image();
+stars_layer_2.src = `static/img/stars_layer_2.png`;
 
 let camera_offset_x = 0;
 let camera_offset_y = 0;
@@ -59,8 +62,8 @@ class Render {
             if (player_data.y > AREA_HEIGHT - (this.screen_height / 2)) {
                 camera_offset_y = this.screen_height - AREA_HEIGHT
             }
+            this.clean_field(-camera_offset_x, -camera_offset_y);
             this.context.translate(camera_offset_x, camera_offset_y);
-            this.clean_field();
             all_data.forEach((elem) => {
                 this.render_entity(elem)
             });
@@ -74,8 +77,27 @@ class Render {
         }
     }
 
-    clean_field() {
-        this.context.drawImage(back_img, 0, 0, AREA_WIDTH, AREA_HEIGHT);
+    clean_field(x, y) {
+        this.context.clearRect(0, 0, AREA_WIDTH, AREA_HEIGHT);
+
+        if (!x || !y) {
+            x = 0;
+            y = 0;
+        }
+
+        render_stars(x, y, stars_layer_2, 4, this.context);
+        render_stars(x, y, stars_layer_1, 5, this.context);
+
+        function render_stars(x, y, img_res, speed_level, ctx) {
+            const tile_size = img_res.width
+            for (let h = 0; h <= AREA_HEIGHT / tile_size + speed_level; h++) {
+                for (let w = 0; w <= AREA_WIDTH / tile_size + speed_level; w++) {
+                    let target_w = (w - x / AREA_WIDTH * speed_level) * tile_size
+                    let target_h = (h - y / AREA_HEIGHT * speed_level) * tile_size
+                    ctx.drawImage(img_res, target_w, target_h, tile_size, tile_size);
+                }
+            }
+        }
     }
 
     point(x, y) {
@@ -150,7 +172,6 @@ class Render {
 
     minimap(player, all_elems) {
         let map_size = 250;
-        this.context.drawImage(back_img, this.screen_width - map_size, this.screen_height - map_size, map_size, map_size);
         this.context.strokeStyle = '#18455f';
         this.context.lineWidth = 2;
         this.context.strokeRect(this.screen_width - map_size, this.screen_height - map_size, map_size, map_size);
