@@ -2,9 +2,9 @@ const SEA_COLOR = "#256692";
 const AREA_WIDTH = 3000;
 const AREA_HEIGHT = 3000;
 let DRAW_BORDERS = false;
-const HOST = 'steel-rebbot-2.herokuapp.com'
-const TEXTURE_URL = `https://${HOST}/load_data`;
-const WS_URL = `wss://${HOST}/ws`;
+const HOST = 'localhost:8000'
+const TEXTURE_URL = `http://${HOST}/load_data`;
+const WS_URL = `ws://${HOST}/ws`;
 
 let action = {up: false, down: false, left: false, right: false, shot: false};
 let last_action = {};
@@ -137,8 +137,7 @@ class Render {
         this.context.restore();
 
         switch (elem.type) {
-            case 'Player':
-            case 'Enemy':
+            case 'SpaceShip':
                 this.life_count(elem)
                 this.nick_name(elem)
                 break
@@ -179,8 +178,7 @@ class Render {
             let mini_x = elem.x * map_size / AREA_WIDTH + this.screen_width - map_size
             let mini_y = elem.y * map_size / AREA_HEIGHT + this.screen_height - map_size
             switch (elem.type) {
-                case 'Player':
-                case 'Enemy':
+                case 'SpaceShip':
                     if (player.id === elem.id) {
                         this.point_minimap(mini_x, mini_y, "rgb(92,251,6)", 3);
                     } else {

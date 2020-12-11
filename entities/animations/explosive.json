@@ -1,6 +1,7 @@
 {
   "context_id": "exp1",
   "type": "effect",
+  "duration": 2,
   "texture": "explosive.png",
   "frames": [
     {
