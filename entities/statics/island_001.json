@@ -2,13 +2,13 @@
   "context_id": "island_001",
   "type": "island",
   "hp_max": 100,
-  "texture": "alpha_stub.png",
+  "texture": "island.png",
   "x": 0,
   "y": 0,
   "offset_x": 0,
-  "offset_y": 0,
-  "width": 0,
-  "height": 0,
+  "offset_y": 2544,
+  "width": 704,
+  "height": 456,
   "points": [
     {
       "x": 3,
