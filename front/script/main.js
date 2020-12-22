@@ -137,8 +137,8 @@ class Render {
         this.context.restore();
 
         switch (elem.type) {
-            case 'Player':
-            case 'Enemy':
+            case 'SpaceShip':
+            case 'Bot':
                 this.life_count(elem)
                 this.nick_name(elem)
                 break
@@ -179,8 +179,8 @@ class Render {
             let mini_x = elem.x * map_size / AREA_WIDTH + this.screen_width - map_size
             let mini_y = elem.y * map_size / AREA_HEIGHT + this.screen_height - map_size
             switch (elem.type) {
-                case 'Player':
-                case 'Enemy':
+                case 'SpaceShip':
+                case 'Bot':
                     if (player.id === elem.id) {
                         this.point_minimap(mini_x, mini_y, "rgb(92,251,6)", 3);
                     } else {

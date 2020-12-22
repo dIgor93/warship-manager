@@ -1,5 +1,4 @@
 import json
-import time
 
 from aredis import StrictRedis
 
@@ -18,7 +17,6 @@ class DataBus:
 
     def add_player(self, player_name, player_id):
         player = {
-            'player_id': player_id,
             'player_name': player_name,
             'shooting': 0,
             'angle': 0,

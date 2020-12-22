@@ -3,6 +3,7 @@ import json
 import os
 import time
 import uuid
+from random import randint
 
 import uvicorn as uvicorn
 from fastapi import FastAPI, Request
@@ -14,7 +15,7 @@ from starlette.responses import JSONResponse, RedirectResponse
 from starlette.websockets import WebSocket, WebSocketDisconnect
 from websockets import ConnectionClosedOK
 
-from warship_manager.config import ENTITY_PATH, RPS
+from warship_manager.config import ENTITY_PATH, RPS, PLAYERS_COUNT
 from warship_manager.data_bus import DataBus
 
 app = FastAPI()
@@ -121,22 +122,19 @@ async def response_for_all():
     last = time.time()
     switcher = 0
     while True:
-        message = await app.state.data_bus.get_message()
-        if message:
+        if message := await app.state.data_bus.get_message():
             curr = time.time()
             delta = float((curr - last))
             last = curr
 
-            curr_state = message
-            if curr_state:
-                curr_state['frame_time'] = delta
-                for socket in app.state.sockets:
-                    try:
-                        await socket.send_json(curr_state)
-                    except ConnectionClosedOK as e:
-                        print(f'Sending error (ConnectionClosedOK): {e}')
-                    except Exception as e:
-                        print(f'Sending error: {e}')
+            message['frame_time'] = delta
+            for socket in app.state.sockets:
+                try:
+                    await socket.send_json(message)
+                except ConnectionClosedOK as e:
+                    print(f'Sending error (ConnectionClosedOK): {e}')
+                except Exception as e:
+                    print(f'Sending error: {e}')
         if switcher == 1:
             await app.state.data_bus.send_state()
             switcher = 0
