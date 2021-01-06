@@ -19,6 +19,13 @@
     padding: 10px;
 }
 
+
+#go_game:hover {
+    font-size: 24pt;
+    background-color: #f63f3f;
+    cursor: pointer;
+}
+
 #name_field {
     width: 100%;
     font-size: 24pt;
