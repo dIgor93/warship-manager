@@ -38,9 +38,23 @@ class Render {
             });
 
         for (let elem in this.resource_data) {
-            this.resource_data[elem].pixi_texture = PIXI.Texture.from(
-                `${TEXTURE_PATH}/${this.resource_data[elem].texture}`
-            );
+            if (this.resource_data[elem].type == 'bonus') {
+                let textureArray = [];
+
+                const baseTexture = PIXI.Texture.from(`${TEXTURE_PATH}/${this.resource_data[elem].texture}`);
+                const orig = new PIXI.Rectangle(0, 0, 100, 100);
+
+                for (let i = 0; i < 2; i++) {
+                    const frame = new PIXI.Rectangle(i * 100, 0, 100, 100);
+                    let texture = new PIXI.Texture(baseTexture, frame, orig);
+                    textureArray.push(texture);
+                }
+                this.resource_data[elem].pixi_texture = textureArray
+            } else {
+                this.resource_data[elem].pixi_texture = PIXI.Texture.from(
+                    `${TEXTURE_PATH}/${this.resource_data[elem].texture}`
+                )
+            }
         }
         this.init_stars();
 
@@ -133,10 +147,6 @@ class Render {
             if (SPACESHIPS.includes(elem.type)) {
                 this.register_lifeline(elem, newContainer);
                 this.register_nickname(elem, newContainer, is_main_player);
-                if (this.kek === undefined) {
-                    this.kek = 1;
-                    // this.bonus.addBonus('shoot_bonus');
-                }
             }
         }
         let cont = this.game_containers_hash.get(elem.id);
@@ -155,17 +165,25 @@ class Render {
 
     register_container(elem) {
         const res_data = this.resource_data[elem.context_id]
-
-        const sprite = new PIXI.Sprite(this.resource_data[elem.context_id].pixi_texture);
-        sprite.anchor.set(
-            -1 * res_data.offset_x / res_data.width,
-            -1 * res_data.offset_y / res_data.height
-        );
-        sprite.width = res_data.width;
-        sprite.height = res_data.height;
-
         const containerElement = new PIXI.Container();
-        containerElement.addChild(sprite)
+
+        if (elem.type == 'Bonus') {
+            let textureArray = this.resource_data[elem.context_id].pixi_texture;
+            let animatedSprite = new PIXI.AnimatedSprite(textureArray);
+            animatedSprite.animationSpeed = 0.1;
+            animatedSprite.anchor.set(0.5);
+            animatedSprite.play();
+            containerElement.addChild(animatedSprite);
+        } else {
+            const sprite = new PIXI.Sprite(this.resource_data[elem.context_id].pixi_texture);
+            sprite.anchor.set(
+                -1 * res_data.offset_x / res_data.width,
+                -1 * res_data.offset_y / res_data.height
+            );
+            sprite.width = res_data.width;
+            sprite.height = res_data.height;
+            containerElement.addChild(sprite);
+        }
 
         this.stage.addChild(containerElement);
         this.game_containers_hash.set(elem.id, containerElement);
@@ -246,26 +264,27 @@ class Render {
         }
     }
 
-    explode_mini(x ,y) {
+    explode_mini(x, y) {
         let textureArray = [];
 
         const baseTexture = PIXI.Texture.from(`${TEXTURE_PATH}/explosive.png`);
-        const orig = new PIXI.Rectangle (0, 0, 100, 100);
+        const orig = new PIXI.Rectangle(0, 0, 100, 100);
 
         for (let i = 0; i < 8; i++) {
-            const frame = new PIXI.Rectangle (i * 100, 0, 100, 100);
+            const frame = new PIXI.Rectangle(i * 100, 0, 100, 100);
             let texture = new PIXI.Texture(baseTexture, frame, orig);
             textureArray.push(texture);
         }
         let animatedSprite = new PIXI.AnimatedSprite(textureArray);
-        animatedSprite.animationSpeed=0.15;
+        animatedSprite.animationSpeed = 0.15;
         animatedSprite.x = x;
         animatedSprite.y = y;
+        animatedSprite.angle = 100 * Math.random();
         animatedSprite.anchor.set(0.5);
         animatedSprite.loop = false;
         animatedSprite.onComplete = function () {
             this.destroy();
-         };
+        };
         animatedSprite.play();
         return animatedSprite
     }
@@ -376,15 +395,18 @@ class Bonus {
 
         const graphics = new PIXI.Graphics();
         graphics.lineStyle(15, 0x149101, 1);
-        graphics.arc(0, 0, 23, 0, 2 * Math.PI * (25/25));
+        graphics.arc(0, 0, 23, 0, 2 * Math.PI * (25 / 25));
         graphics.lineStyle(2, 0x000000, 1);
-        graphics.arc(0, 0, 30, 0, 2 * Math.PI * (25/25));
+        graphics.arc(0, 0, 30, 0, 2 * Math.PI * (25 / 25));
         cont.addChild(graphics);
 
-        const texture = PIXI.Texture.from(`${TEXTURE_PATH}/${mapping[name]}.png`);
+        const baseTexture = PIXI.Texture.from(`${TEXTURE_PATH}/${mapping[name]}.png`);
+        const rectangle = new PIXI.Rectangle(0, 0, 100, 100);
+        const texture = new PIXI.Texture(baseTexture, rectangle, rectangle);
         const sprite = new PIXI.Sprite(texture);
-        sprite.width = 45;
-        sprite.height = 45;
+        sprite.width = 65;
+        sprite.height = 65;
+        sprite.x = -2; // подровнял, возможно потом можно удалить
         sprite.anchor.set(0.5);
         cont.addChild(sprite);
 
@@ -392,7 +414,7 @@ class Bonus {
 
         this.bonusBar.addChild(cont);
         this.bonusesMap[name] = {container: cont, timer: 0};
-        this.bonusCount ++;
+        this.bonusCount++;
     }
 
     update(bonuses) {
@@ -401,7 +423,7 @@ class Bonus {
                 this.addBonus(elem.context);
             }
             const bonus = this.bonusesMap[elem.context];
-            bonus.timer = elem.curr_timer/elem.full_timer;
+            bonus.timer = elem.curr_timer / elem.full_timer;
 
             const graphics = bonus.container.getChildAt(0);
             graphics.clear();
@@ -424,7 +446,7 @@ class Bonus {
 
         keysForDelete.forEach((elem) => {
             delete this.bonusesMap[elem];
-            this.bonusCount --;
+            this.bonusCount--;
         })
     }
 
