@@ -7,7 +7,8 @@ class Render {
         this.screen_height = window.innerHeight;
         this.app = new PIXI.Application({
             width: this.screen_width,
-            height: this.screen_height
+            height: this.screen_height,
+            backgroundColor: '0x000c13'
         });
         document.body.appendChild(this.app.view);
 
@@ -437,10 +438,14 @@ class Bonus {
 
     cleanZeroTimers() {
         let keysForDelete = [];
+        let counter = 0;
         for (let key in this.bonusesMap) {
             if (this.bonusesMap[key].timer < 0.01) {
                 this.bonusesMap[key].container.destroy();
                 keysForDelete.push(key);
+            } else {
+                this.bonusesMap[key].container.y = 75 * counter;
+                counter++;
             }
         }
 
