@@ -1,9 +1,9 @@
 const SEA_COLOR = "#3d9ae3";
 const AREA_WIDTH = 3000;
 const AREA_HEIGHT = 3000;
-const HOST = 'localhost:8000'
-const TEXTURE_URL = `http://${HOST}/load_data`;
-const WS_URL = `ws://${HOST}/ws`;
+const HOST = 'steel-rebbot-2.herokuapp.com'
+const TEXTURE_URL = `https://${HOST}/load_data`;
+const WS_URL = `wss://${HOST}/ws`;
 
 let action = {up: false, down: false, left: false, right: false, shot: false};
 let last_action = {};
