@@ -8,7 +8,7 @@ class Render {
         this.app = new PIXI.Application({
             width: this.screen_width,
             height: this.screen_height,
-            backgroundColor: '0x000c13'
+            backgroundColor: '0x0c192b'
         });
         document.body.appendChild(this.app.view);
 
@@ -70,6 +70,17 @@ class Render {
 
         this.bonus = new Bonus(this.screen_width - 60, 160);
         this.hud.addChild(this.bonus.getContainer());
+
+        let isMobile = false;
+        if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|ipad|iris|kindle|Android|Silk|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(navigator.userAgent)
+            || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(navigator.userAgent.substr(0, 4))) {
+            isMobile = true;
+        }
+        if (isMobile) {
+            action.shot = true;
+            this.joystick = new Joystick(this.screen_width / 2, this.screen_height - 160)
+            this.hud.addChild(this.joystick.get_container());
+        }
     }
 
     info_text(x, y) {
@@ -223,7 +234,15 @@ class Render {
 
         const x = del_container.x;
         const y = del_container.y;
-        this.stage.addChild(this.explode_mini(x, y));
+        if (_id.startsWith('bullet_predator_renegate')) {
+            this.stage.addChild(this.explode_blue(x, y, 'blue'));
+        } else {
+            if (_id.startsWith('bullet_predator')) {
+                this.stage.addChild(this.explode_blue(x, y, 'red'));
+            } else {
+                this.stage.addChild(this.explode_mini(x, y));
+            }
+        }
 
         this.game_containers_hash.delete(_id);
         del_container.destroy();
@@ -290,6 +309,31 @@ class Render {
         return animatedSprite
     }
 
+    explode_blue(x, y, color) {
+        let textureArray = [];
+
+        const baseTexture = PIXI.Texture.from(`${TEXTURE_PATH}/${color}_exploode.png`);
+        const orig = new PIXI.Rectangle(0, 0, 32, 32);
+
+        for (let i = 0; i < 10; i++) {
+            const frame = new PIXI.Rectangle(i * 32, 0, 32, 32);
+            let texture = new PIXI.Texture(baseTexture, frame, orig);
+            textureArray.push(texture);
+        }
+        let animatedSprite = new PIXI.AnimatedSprite(textureArray);
+        animatedSprite.animationSpeed = 0.15;
+        animatedSprite.x = x;
+        animatedSprite.y = y;
+        animatedSprite.angle = 360 * Math.random();
+        animatedSprite.anchor.set(0.5);
+        animatedSprite.loop = false;
+        animatedSprite.onComplete = function () {
+            this.destroy();
+        };
+        animatedSprite.play();
+        return animatedSprite
+    }
+
     gameOver(text, score) {
         const style = new PIXI.TextStyle({
             fontFamily: "Times New Roman",
@@ -326,7 +370,7 @@ class Render {
             dropShadowAngle: -4.2,
             dropShadowDistance: 1,
         })
-        const restartText = new PIXI.Text('press F5 for new game', restartStyle);
+        const restartText = new PIXI.Text('refresh page for new game...', restartStyle);
         restartText.anchor.set(0.5);
         restartText.x = this.screen_width / 2;
         restartText.y = this.screen_height - 30;
@@ -464,4 +508,84 @@ class Bonus {
     getContainer() {
         return this.bonusBar;
     }
+}
+
+class Joystick {
+
+    constructor(position_x, position_y) {
+        const textureButton = PIXI.Texture.from(`${TEXTURE_PATH}/joystick.png`);
+        this.direct_button = new PIXI.Container();
+        let buttons = [];
+
+        const button_right = new PIXI.Sprite(textureButton);
+        button_right.x = position_x + 50;
+        button_right.y = position_y;
+        button_right.on('touchstart', (event) => onClickPointerOut(button_right, 'right', true));
+        button_right.on('touchleave', (event) => onClickPointerOut(button_right, 'right', false));
+        buttons.push(button_right);
+
+        const button_down = new PIXI.Sprite(textureButton);
+        button_down.x = position_x;
+        button_down.y = position_y + 50;
+        button_down.angle = 90;
+        button_down.on('touchstart', (event) => onClickPointerOut(button_down, 'down', true));
+        button_down.on('touchleave', (event) => onClickPointerOut(button_down, 'down', false));
+        buttons.push(button_down);
+
+        const button_left = new PIXI.Sprite(textureButton);
+        button_left.x = position_x - 50;
+        button_left.y = position_y;
+        button_left.angle = 180;
+        button_left.on('touchstart', (event) => onClickPointerOut(button_left, 'left', true));
+        button_left.on('touchleave', (event) => onClickPointerOut(button_left, 'left', false));
+        buttons.push(button_left);
+
+        const button_up = new PIXI.Sprite(textureButton);
+        button_up.x = position_x;
+        button_up.y = position_y - 50;
+        button_up.angle = 270;
+        button_up.on('touchstart', (event) => onClickPointerOut(button_up, 'up', true));
+        button_up.on('touchleave', (event) => onClickPointerOut(button_up, 'up', false));
+        buttons.push(button_up);
+
+        buttons.forEach((button) => {
+            button.anchor.set(0.5)
+            button.buttonMode = true;
+            button.interactive = true;
+            this.direct_button.addChild(button);
+        })
+
+        function onClickPointerOut(object, direction, action_flag) {
+            if (action_flag) {
+                object.tint = 0x777799;
+            } else {
+                object.tint = 0xFFFFFF;
+            }
+            switch (direction) {
+                case 'right':
+                    action.right = action_flag;
+                    break;
+                case 'left':
+                    action.left = action_flag;
+                    break;
+                case 'up':
+                    action.up = action_flag;
+                    break;
+                case 'down':
+                    action.down = action_flag;
+                    break;
+            }
+            for (let key in action) {
+                if (last_action[key] !== action[key]) {
+                    last_action[key] = action[key];
+                    send_movement = true;
+                }
+            }
+        }
+    }
+
+    get_container() {
+        return this.direct_button;
+    }
+
 }
