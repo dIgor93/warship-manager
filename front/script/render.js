@@ -77,7 +77,7 @@ class Render {
             isMobile = true;
         }
         if (isMobile) {
-            action.shot = true;
+
             this.joystick = new Joystick(this.screen_width / 2, this.screen_height - 160)
             this.hud.addChild(this.joystick.get_container());
         }
@@ -513,54 +513,95 @@ class Bonus {
 class Joystick {
 
     constructor(position_x, position_y) {
-        const textureButton = PIXI.Texture.from(`${TEXTURE_PATH}/joystick.png`);
-        this.direct_button = new PIXI.Container();
-        let buttons = [];
+        const global_bound = 80;
+        const moving_bound = 35;
+        const shutting_bound = 65;
 
-        const button_right = new PIXI.Sprite(textureButton);
-        button_right.x = position_x + 50;
-        button_right.y = position_y;
-        button_right.on('touchstart', (event) => onClickPointerOut(button_right, 'right', true));
-        button_right.on('touchleave', (event) => onClickPointerOut(button_right, 'right', false));
-        buttons.push(button_right);
+        const green_rect = new PIXI.Graphics();
+        green_rect.beginFill(0xFF3333, 0.7);
+        green_rect.drawRoundedRect(-global_bound, -global_bound, global_bound * 2, global_bound * 2, 32);
+        green_rect.endFill();
+        green_rect.beginHole();
+        green_rect.drawRoundedRect(-shutting_bound, -shutting_bound, shutting_bound * 2, shutting_bound * 2, 23);
+        green_rect.endHole();
 
-        const button_down = new PIXI.Sprite(textureButton);
-        button_down.x = position_x;
-        button_down.y = position_y + 50;
-        button_down.angle = 90;
-        button_down.on('touchstart', (event) => onClickPointerOut(button_down, 'down', true));
-        button_down.on('touchleave', (event) => onClickPointerOut(button_down, 'down', false));
-        buttons.push(button_down);
+        green_rect.beginFill(0x33dd33, 0.7);
+        green_rect.drawRoundedRect(-shutting_bound, -shutting_bound, shutting_bound * 2, shutting_bound * 2, 23);
+        green_rect.endFill();
+        green_rect.beginHole();
+        green_rect.drawRoundedRect(-moving_bound, -moving_bound, moving_bound * 2, moving_bound * 2, 23);
+        green_rect.endHole();
 
-        const button_left = new PIXI.Sprite(textureButton);
-        button_left.x = position_x - 50;
-        button_left.y = position_y;
-        button_left.angle = 180;
-        button_left.on('touchstart', (event) => onClickPointerOut(button_left, 'left', true));
-        button_left.on('touchleave', (event) => onClickPointerOut(button_left, 'left', false));
-        buttons.push(button_left);
+        const textureButton = PIXI.Texture.from(`${TEXTURE_PATH}/joystick_down.png`);
+        const joystick = new PIXI.Sprite(textureButton);
+        joystick.interactive = true;
+        joystick.buttonMode = true;
+        joystick.zIndex = 10;
+        joystick.anchor.set(0.5);
+        joystick.scale.set(0.5);
+        joystick
+            .on('touchstart', onDragStart)
+            .on('touchend', onDragEnd)
+            .on('touchendoutside', onDragEnd)
+            .on('touchmove', onDragMove);
 
-        const button_up = new PIXI.Sprite(textureButton);
-        button_up.x = position_x;
-        button_up.y = position_y - 50;
-        button_up.angle = 270;
-        button_up.on('touchstart', (event) => onClickPointerOut(button_up, 'up', true));
-        button_up.on('touchleave', (event) => onClickPointerOut(button_up, 'up', false));
-        buttons.push(button_up);
+        function onDragStart(event) {
+            this.data = event.data;
+            this.dragging = true;
+        }
 
-        buttons.forEach((button) => {
-            button.anchor.set(0.5)
-            button.buttonMode = true;
-            button.interactive = true;
-            this.direct_button.addChild(button);
-        })
+        function onDragEnd() {
+            this.dragging = false;
+            this.data = null;
+            this.x = 0;
+            this.y = 0;
+            changeMovement('shot', false);
+            changeMovement('left', false);
+            changeMovement('right', false);
+            changeMovement('up', false);
+            changeMovement('down', false)
+        }
 
-        function onClickPointerOut(object, direction, action_flag) {
-            if (action_flag) {
-                object.tint = 0x777799;
-            } else {
-                object.tint = 0xFFFFFF;
+        function onDragMove() {
+            if (this.dragging) {
+                const newPosition = this.data.getLocalPosition(this.parent);
+                if ((newPosition.x > -global_bound) && (newPosition.x < global_bound)) {
+                    this.x = newPosition.x;
+                }
+                if ((newPosition.y > -global_bound) && (newPosition.y < global_bound)) {
+                    this.y = newPosition.y;
+                }
+
+                changeMovement('right', false);
+                changeMovement('left', false);
+                changeMovement('up', false);
+                changeMovement('down', false);
+
+                if (newPosition.x > moving_bound) {
+                    changeMovement('right', true)
+                }
+                if (newPosition.x < -moving_bound) {
+                    changeMovement('left', true)
+                }
+                if (newPosition.y > moving_bound) {
+                    changeMovement('down', true)
+                }
+                if (newPosition.y < -moving_bound) {
+                    changeMovement('up', true)
+                }
+
+                if ((newPosition.x < -shutting_bound) ||
+                    (newPosition.x > shutting_bound) ||
+                    (newPosition.y < -shutting_bound) ||
+                    (newPosition.y > shutting_bound)) {
+                    changeMovement('shot', true)
+                } else {
+                    changeMovement('shot', false)
+                }
             }
+        }
+
+        function changeMovement(direction, action_flag) {
             switch (direction) {
                 case 'right':
                     action.right = action_flag;
@@ -574,6 +615,9 @@ class Joystick {
                 case 'down':
                     action.down = action_flag;
                     break;
+                case 'shot':
+                    action.shot = action_flag;
+                    break
             }
             for (let key in action) {
                 if (last_action[key] !== action[key]) {
@@ -582,6 +626,12 @@ class Joystick {
                 }
             }
         }
+
+        this.direct_button = new PIXI.Container();
+        this.direct_button.x = position_x
+        this.direct_button.y = position_y
+        this.direct_button.addChild(green_rect);
+        this.direct_button.addChild(joystick);
     }
 
     get_container() {
