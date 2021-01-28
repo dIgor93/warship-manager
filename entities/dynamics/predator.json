@@ -5,10 +5,10 @@
   "texture": "spaceship_main.png",
   "x": 0,
   "y": 0,
-  "offset_x": -25,
-  "offset_y": -35,
-  "width": 50,
-  "height": 71,
+  "offset_x": -32,
+  "offset_y": -32,
+  "width": 64,
+  "height": 64,
   "points": [
     {
       "x": 18,

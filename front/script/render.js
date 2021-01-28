@@ -1,5 +1,6 @@
 const TEXTURE_PATH = 'static/img';
 const SPACESHIPS = ['SpaceShip', 'Bot'];
+let player_object = null;
 
 class Render {
     constructor() {
@@ -8,7 +9,7 @@ class Render {
         this.app = new PIXI.Application({
             width: this.screen_width,
             height: this.screen_height,
-            backgroundColor: '0x0c192b'
+            backgroundColor: '0x556873'
         });
         document.body.appendChild(this.app.view);
 
@@ -29,6 +30,7 @@ class Render {
         this.previous_objects = [];
         this.game_started = false;
         this.score = 0;
+        this.player_object = null;
     }
 
     async init() {
@@ -192,8 +194,6 @@ class Render {
                 -1 * res_data.offset_x / res_data.width,
                 -1 * res_data.offset_y / res_data.height
             );
-            sprite.width = res_data.width;
-            sprite.height = res_data.height;
             containerElement.addChild(sprite);
         }
 
@@ -248,7 +248,8 @@ class Render {
         del_container.destroy();
     }
 
-    render_screen(player_object, inner_objects, frame_time) {
+    render_screen(player_object_, inner_objects, frame_time) {
+        player_object = player_object_;
         if (player_object) {
             const [camera_x, camera_y] = this.evaluate_camera_offset(player_object.x, player_object.y)
 
@@ -339,7 +340,7 @@ class Render {
             fontFamily: "Times New Roman",
             fontSize: 50,
             fontWeight: 'bold',
-            fill: '#ffe907',
+            fill: '#f4f8f6',
             dropShadow: true,
             dropShadowColor: '#000000',
             dropShadowBlur: 5,
@@ -514,7 +515,6 @@ class Joystick {
 
     constructor(position_x, position_y) {
         const global_bound = 80;
-        const moving_bound = 35;
         const shutting_bound = 65;
 
         const green_rect = new PIXI.Graphics();
@@ -523,13 +523,6 @@ class Joystick {
         green_rect.endFill();
         green_rect.beginHole();
         green_rect.drawRoundedRect(-shutting_bound, -shutting_bound, shutting_bound * 2, shutting_bound * 2, 23);
-        green_rect.endHole();
-
-        green_rect.beginFill(0x33dd33, 0.7);
-        green_rect.drawRoundedRect(-shutting_bound, -shutting_bound, shutting_bound * 2, shutting_bound * 2, 23);
-        green_rect.endFill();
-        green_rect.beginHole();
-        green_rect.drawRoundedRect(-moving_bound, -moving_bound, moving_bound * 2, moving_bound * 2, 23);
         green_rect.endHole();
 
         const textureButton = PIXI.Texture.from(`${TEXTURE_PATH}/joystick_down.png`);
@@ -548,6 +541,7 @@ class Joystick {
         function onDragStart(event) {
             this.data = event.data;
             this.dragging = true;
+            this.timer = null;
         }
 
         function onDragEnd() {
@@ -563,43 +557,39 @@ class Joystick {
         }
 
         function onDragMove() {
-            if (this.dragging) {
-                const newPosition = this.data.getLocalPosition(this.parent);
-                if ((newPosition.x > -global_bound) && (newPosition.x < global_bound)) {
-                    this.x = newPosition.x;
-                }
-                if ((newPosition.y > -global_bound) && (newPosition.y < global_bound)) {
-                    this.y = newPosition.y;
-                }
-
-                changeMovement('right', false);
-                changeMovement('left', false);
-                changeMovement('up', false);
-                changeMovement('down', false);
-
-                if (newPosition.x > moving_bound) {
-                    changeMovement('right', true)
-                }
-                if (newPosition.x < -moving_bound) {
-                    changeMovement('left', true)
-                }
-                if (newPosition.y > moving_bound) {
-                    changeMovement('down', true)
-                }
-                if (newPosition.y < -moving_bound) {
-                    changeMovement('up', true)
-                }
-
-                if ((newPosition.x < -shutting_bound) ||
-                    (newPosition.x > shutting_bound) ||
-                    (newPosition.y < -shutting_bound) ||
-                    (newPosition.y > shutting_bound)) {
-                    changeMovement('shot', true)
-                } else {
-                    changeMovement('shot', false)
-                }
+            if (this.timer !== null) {
+                clearInterval(this.timer)
             }
+            this.timer = setInterval(() => {
+                if (this.dragging) {
+                    const newPosition = this.data.getLocalPosition(this.parent);
+
+                    let angle_current = (parseFloat(player_object.r) + Math.PI) % (2 * Math.PI);
+                    let angle_target = (Math.atan2(newPosition.y, newPosition.x) + Math.PI / 2) % (2 * Math.PI)
+
+                    console.log(angle_current,  angle_target);
+                    if (Math.abs(angle_current - angle_target) > 1) {
+                        changeMovement('shot', true)
+                        changeMovement('up', true);
+                        let vec_product = Math.cos(angle_current) * Math.sin(angle_target) -
+                            Math.cos(angle_target) * Math.sin(angle_current);
+                        if (vec_product < 0) {
+                            changeMovement('left', true);
+                            changeMovement('right', false);
+                        } else {
+                            if (vec_product > 0) {
+                                changeMovement('right', true);
+                                changeMovement('left', false);
+                            }
+                        }
+                    } else {
+                        changeMovement('left', false);
+                        changeMovement('right', false);
+                    }
+                }
+            }, 100)
         }
+
 
         function changeMovement(direction, action_flag) {
             switch (direction) {
