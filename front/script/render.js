@@ -1,15 +1,19 @@
 const TEXTURE_PATH = 'static/img';
 const SPACESHIPS = ['SpaceShip', 'Bot'];
+const SPRITE_MAP_PATH = 'static/spriteMaps';
+const SPACECOLOR = '#0a0a0e'
 let player_object = null;
+
 
 class Render {
     constructor() {
         this.screen_width = window.innerWidth;
         this.screen_height = window.innerHeight;
+        this.previousObjIds = new Set();
         this.app = new PIXI.Application({
             width: this.screen_width,
             height: this.screen_height,
-            backgroundColor: '0x556873'
+            backgroundColor: SPACECOLOR.replace('#', '0x')
         });
         document.body.appendChild(this.app.view);
 
@@ -27,38 +31,20 @@ class Render {
 
         this.game_containers_hash = new Map();
         this.resource_data = null;
-        this.previous_objects = [];
         this.game_started = false;
         this.score = 0;
         this.player_object = null;
     }
 
     async init() {
+        this.ship_manager = new SpaceShipManager();
+
         this.resource_data = await fetch(TEXTURE_URL)
             .then((res) => res.json())
             .catch(err => {
                 throw err
             });
 
-        for (let elem in this.resource_data) {
-            if (this.resource_data[elem].type == 'bonus') {
-                let textureArray = [];
-
-                const baseTexture = PIXI.Texture.from(`${TEXTURE_PATH}/${this.resource_data[elem].texture}`);
-                const orig = new PIXI.Rectangle(0, 0, 100, 100);
-
-                for (let i = 0; i < 2; i++) {
-                    const frame = new PIXI.Rectangle(i * 100, 0, 100, 100);
-                    let texture = new PIXI.Texture(baseTexture, frame, orig);
-                    textureArray.push(texture);
-                }
-                this.resource_data[elem].pixi_texture = textureArray
-            } else {
-                this.resource_data[elem].pixi_texture = PIXI.Texture.from(
-                    `${TEXTURE_PATH}/${this.resource_data[elem].texture}`
-                )
-            }
-        }
         this.init_stars();
 
         this.minimap = new Minimap(this.screen_width, this.screen_height, 250);
@@ -79,7 +65,6 @@ class Render {
             isMobile = true;
         }
         if (isMobile) {
-
             this.joystick = new Joystick(this.screen_width / 2, this.screen_height - 160)
             this.hud.addChild(this.joystick.get_container());
         }
@@ -125,18 +110,18 @@ class Render {
 
     evaluate_camera_offset(player_x, player_y) {
         if (player_x > (this.screen_width / 2)) {
-            camera_offset_x = this.screen_width / 2 - player_x
+            cameraOffsetX = this.screen_width / 2 - player_x
         }
         if (player_x > AREA_WIDTH - (this.screen_width / 2)) {
-            camera_offset_x = this.screen_width - AREA_WIDTH
+            cameraOffsetX = this.screen_width - AREA_WIDTH
         }
         if (player_y > (this.screen_height / 2)) {
-            camera_offset_y = this.screen_height / 2 - player_y
+            cameraOffsetY = this.screen_height / 2 - player_y
         }
         if (player_y > AREA_HEIGHT - (this.screen_height / 2)) {
-            camera_offset_y = this.screen_height - AREA_HEIGHT
+            cameraOffsetY = this.screen_height - AREA_HEIGHT
         }
-        return [camera_offset_x, camera_offset_y];
+        return [cameraOffsetX, cameraOffsetY];
     }
 
     move_stars(camera_offset_x, camera_offset_y) {
@@ -155,184 +140,36 @@ class Render {
         this.stage.pivot.y = -1 * camera_offset_y;
     }
 
-    render_entity(elem, is_main_player) {
-        if (!this.game_containers_hash.has(elem.id)) {
-            let newContainer = this.register_container(elem);
-            if (SPACESHIPS.includes(elem.type)) {
-                this.register_lifeline(elem, newContainer);
-                this.register_nickname(elem, newContainer, is_main_player);
-            }
-        }
-        let cont = this.game_containers_hash.get(elem.id);
-        cont.x = elem.x;
-        cont.y = elem.y;
-        cont.getChildAt(0).rotation = elem.r; // крутим спрайт
-        if (SPACESHIPS.includes(elem.type)) {
-            this.update_life_count(elem, cont);
-        }
-    }
-
-    update_life_count(elem, cont) {
-        let hp_graph = cont.getChildAt(1);
-        hp_graph.width = elem.hp;
-    }
-
-    register_container(elem) {
-        const res_data = this.resource_data[elem.context_id]
-        const containerElement = new PIXI.Container();
-
-        if (elem.type == 'Bonus') {
-            let textureArray = this.resource_data[elem.context_id].pixi_texture;
-            let animatedSprite = new PIXI.AnimatedSprite(textureArray);
-            animatedSprite.animationSpeed = 0.1;
-            animatedSprite.anchor.set(0.5);
-            animatedSprite.play();
-            containerElement.addChild(animatedSprite);
-        } else {
-            const sprite = new PIXI.Sprite(this.resource_data[elem.context_id].pixi_texture);
-            sprite.anchor.set(
-                -1 * res_data.offset_x / res_data.width,
-                -1 * res_data.offset_y / res_data.height
-            );
-            containerElement.addChild(sprite);
-        }
-
-        this.stage.addChild(containerElement);
-        this.game_containers_hash.set(elem.id, containerElement);
-        return containerElement;
-    }
-
-    register_lifeline(elem, container) {
-        let bounds = container.getChildAt(0).getLocalBounds();
-        const greenLine = new PIXI.Graphics();
-        greenLine.beginFill(0x10f50f);
-        greenLine.drawRect(-elem.hp_max / 2, bounds.y + 1, elem.hp + 2, 8);
-        greenLine.endFill()
-        container.addChild(greenLine);
-    }
-
-    register_nickname(elem, container, is_main_player) {
-        let bounds = container.getChildAt(0).getLocalBounds();
-
-        const style = new PIXI.TextStyle({
-            fontFamily: 'Courier New',
-            fontSize: 15,
-            fontWeight: 'bold',
-            fill: '#5394BA',
-        })
-        if (is_main_player) {
-            style.fill = '#FFFFFF';
-        }
-        const richText = new PIXI.Text(elem.name, style);
-        richText.y = bounds.y - 8;
-        richText.anchor.set(0.5);
-        container.addChild(richText);
-    }
-
-    unregister_container(_id) {
-        let del_container = this.game_containers_hash.get(_id);
-
-        const x = del_container.x;
-        const y = del_container.y;
-        if (_id.startsWith('bullet_predator_renegate')) {
-            this.stage.addChild(this.explode_blue(x, y, 'blue'));
-        } else {
-            if (_id.startsWith('bullet_predator')) {
-                this.stage.addChild(this.explode_blue(x, y, 'red'));
-            } else {
-                this.stage.addChild(this.explode_mini(x, y));
-            }
-        }
-
-        this.game_containers_hash.delete(_id);
-        del_container.destroy();
-    }
-
-    render_screen(player_object_, inner_objects, frame_time) {
-        player_object = player_object_;
+    render_screen(innerPlayerObject, innerObjects, frameTime) {
+        player_object = innerPlayerObject;
         if (player_object) {
+            let innerObjIds = new Set(innerObjects.map((elem) => elem.id));
+            let removedEntityIds = new Set([...this.previousObjIds].filter(x => !innerObjIds.has(x)));
+            let newEntityIds = new Set([...innerObjIds].filter(x => !this.previousObjIds.has(x)));
+
             const [camera_x, camera_y] = this.evaluate_camera_offset(player_object.x, player_object.y)
 
             this.move_stars(camera_x, camera_y);
             this.move_camera(camera_x, camera_y);
 
-            // cleanup expired object containers
-            const curr_ids = Array.from(inner_objects, x => x.id);
-            this.previous_objects.filter(x => !curr_ids.includes(x))
-                .forEach((elem) => this.unregister_container(elem));
-            this.previous_objects = curr_ids;
+            this.ship_manager.registerNew(innerObjects, newEntityIds, this.stage);
+            this.ship_manager.cleanup(removedEntityIds);
 
-            // render input objects
-            inner_objects.forEach((elem) => {
-                if (elem.id === player_object.id) {
-                    this.render_entity(elem, true);
-                } else {
-                    this.render_entity(elem, false);
-                }
-            })
-            this.scoreText.text = `score: ${player_object.score}`;
-            this.fpsText.text = `frame time: ${frame_time.toFixed(4)}`;
-            this.minimap.update(player_object, inner_objects);
+            this.ship_manager.update(innerObjects);
+            this.minimap.update(player_object, innerObjects);
             this.bonus.update(player_object.bonuses);
 
+            this.scoreText.text = `score: ${player_object.score}`;
+            this.fpsText.text = `frame time: ${frameTime.toFixed(4)}`;
+
             this.game_started = true;
-            this.score = player_object.score;
+            this.previousObjIds = innerObjIds;
         } else {
             if (this.game_started) {
                 this.gameOver("Game over", this.score);
                 this.game_started = false;
             }
         }
-    }
-
-    explode_mini(x, y) {
-        let textureArray = [];
-
-        const baseTexture = PIXI.Texture.from(`${TEXTURE_PATH}/explosive.png`);
-        const orig = new PIXI.Rectangle(0, 0, 100, 100);
-
-        for (let i = 0; i < 8; i++) {
-            const frame = new PIXI.Rectangle(i * 100, 0, 100, 100);
-            let texture = new PIXI.Texture(baseTexture, frame, orig);
-            textureArray.push(texture);
-        }
-        let animatedSprite = new PIXI.AnimatedSprite(textureArray);
-        animatedSprite.animationSpeed = 0.15;
-        animatedSprite.x = x;
-        animatedSprite.y = y;
-        animatedSprite.angle = 100 * Math.random();
-        animatedSprite.anchor.set(0.5);
-        animatedSprite.loop = false;
-        animatedSprite.onComplete = function () {
-            this.destroy();
-        };
-        animatedSprite.play();
-        return animatedSprite
-    }
-
-    explode_blue(x, y, color) {
-        let textureArray = [];
-
-        const baseTexture = PIXI.Texture.from(`${TEXTURE_PATH}/${color}_exploode.png`);
-        const orig = new PIXI.Rectangle(0, 0, 32, 32);
-
-        for (let i = 0; i < 10; i++) {
-            const frame = new PIXI.Rectangle(i * 32, 0, 32, 32);
-            let texture = new PIXI.Texture(baseTexture, frame, orig);
-            textureArray.push(texture);
-        }
-        let animatedSprite = new PIXI.AnimatedSprite(textureArray);
-        animatedSprite.animationSpeed = 0.15;
-        animatedSprite.x = x;
-        animatedSprite.y = y;
-        animatedSprite.angle = 360 * Math.random();
-        animatedSprite.anchor.set(0.5);
-        animatedSprite.loop = false;
-        animatedSprite.onComplete = function () {
-            this.destroy();
-        };
-        animatedSprite.play();
-        return animatedSprite
     }
 
     gameOver(text, score) {
@@ -567,7 +404,7 @@ class Joystick {
                     let angle_current = (parseFloat(player_object.r) + Math.PI) % (2 * Math.PI);
                     let angle_target = (Math.atan2(newPosition.y, newPosition.x) + Math.PI / 2) % (2 * Math.PI)
 
-                    console.log(angle_current,  angle_target);
+                    console.log(angle_current, angle_target);
                     if (Math.abs(angle_current - angle_target) > 1) {
                         changeMovement('shot', true)
                         changeMovement('up', true);
@@ -610,9 +447,9 @@ class Joystick {
                     break
             }
             for (let key in action) {
-                if (last_action[key] !== action[key]) {
-                    last_action[key] = action[key];
-                    send_movement = true;
+                if (lastAction[key] !== action[key]) {
+                    lastAction[key] = action[key];
+                    sendMovement = true;
                 }
             }
         }
@@ -628,4 +465,133 @@ class Joystick {
         return this.direct_button;
     }
 
+}
+
+class SpaceShipManager {
+    constructor() {
+        PIXI.Loader.shared.add('SpaceShip', `${SPRITE_MAP_PATH}/spaceship_main.json`);
+        PIXI.Loader.shared.add('Bot', `${SPRITE_MAP_PATH}/spaceship.json`);
+        this.spacehips = {};
+    }
+
+    createSpaceship(id, type, nickname, isMainPlayer) {
+        const mainContainer = new PIXI.Container()
+        let spaceShipObj = {
+            'type': type,
+            'animations': {},
+            'mainContainer': mainContainer,
+            'nickname': this.nickname(nickname, mainContainer, isMainPlayer),
+            'lifeline': this.lifeline(mainContainer),
+        };
+        PIXI.Loader.shared.load(setup)
+
+        function setup() {
+            const animations = PIXI.Loader.shared.resources[type].spritesheet.animations;
+
+            for (let id in animations) {
+                const animatedSprite = new PIXI.AnimatedSprite(animations[id]);
+                animatedSprite.visible = false;
+                animatedSprite.animationSpeed = 0.1;
+                animatedSprite.anchor.set(0.5);
+                spaceShipObj.animations[id] = animatedSprite
+                spaceShipObj.currentAnimation = id;
+                spaceShipObj.mainContainer.addChild(animatedSprite)
+            }
+        }
+
+        this.spacehips[id] = spaceShipObj;
+        spaceShipObj.mainContainer.addChild(spaceShipObj.nickname, spaceShipObj.lifeline);
+        return spaceShipObj.mainContainer;
+    }
+
+    nickname(nickname, container, is_main_player) {
+        const style = new PIXI.TextStyle({
+            fontFamily: 'Courier New',
+            fontSize: 15,
+            fontWeight: 'bold',
+            fill: '#f8f8f8'
+        })
+        if (is_main_player) {
+            style.fill = '#FFFFFF';
+        }
+        const richText = new PIXI.Text(nickname, style);
+        richText.y = -65;
+        richText.anchor.set(0.5);
+        return richText;
+    }
+
+    lifeline() {
+        return new PIXI.Graphics();
+    }
+
+    colorMapping(value) {
+        if (value > 0.5) return 0x10f50f;
+        if (value > 0.25) return 0xFFA200;
+        return 0xC60000;
+    }
+
+    updateLifeline(current, max, container) {
+        const width = 100;
+        const heigth = 7;
+        container.clear();
+        container.beginFill(0x141414);
+        container.drawRect(-50, -55, width, heigth);
+        container.endFill();
+
+        const percent = current / max;
+
+        container.beginFill(this.colorMapping(percent));
+        container.drawRect(-50, -55, width * percent, heigth);
+        container.endFill();
+    }
+
+    registerNew(innerObjects, newEntityIds, stage) {
+        innerObjects.forEach((elem) => {
+            if (newEntityIds.has(elem.id)) {
+                if (['SpaceShip', 'Bot'].includes(elem.type)) {
+                    stage.addChild(this.createSpaceship(elem.id, elem.type, elem.name, player_object === elem))
+                }
+            }
+        })
+    }
+
+    update(elems) {
+        for (let key in this.spacehips) {
+            const sourceElem = elems.find((elem) => elem.id === key)
+            if (sourceElem && this.spacehips.hasOwnProperty(sourceElem.id)) {
+                const currElem = this.spacehips[sourceElem.id]
+                const currAnim = currElem.currentAnimation;
+
+                if (currElem.animations.hasOwnProperty(currAnim)) {
+                    currElem.animations[currAnim].visible = true;
+                    if (!currElem.animations[currAnim].playing) {
+                        currElem.animations[currAnim].play();
+                    }
+                    currElem.animations[currAnim].rotation = sourceElem.r;
+                }
+
+                currElem.mainContainer.x = sourceElem.x;
+                currElem.mainContainer.y = sourceElem.y;
+
+                this.updateLifeline(sourceElem.hp, sourceElem.hp_max, currElem.lifeline);
+            }
+        }
+    }
+
+    cleanup(removedEntityIds) {
+        removedEntityIds.forEach((_id) => {
+            if (this.spacehips.hasOwnProperty(_id)) {
+                this.spacehips[_id].mainContainer.destroy();
+                delete this.spacehips[_id];
+            }
+        })
+    }
+}
+
+class StaticManager {
+    constructor() {
+        this.resource_data[elem].pixi_texture = PIXI.Texture.from(
+                    `${TEXTURE_PATH}/${this.resource_data[elem].texture}`
+                )
+    }
 }

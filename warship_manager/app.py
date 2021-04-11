@@ -3,7 +3,6 @@ import json
 import os
 import time
 import uuid
-from random import randint
 
 import uvicorn as uvicorn
 from fastapi import FastAPI, Request
@@ -15,7 +14,7 @@ from starlette.responses import JSONResponse, RedirectResponse
 from starlette.websockets import WebSocket, WebSocketDisconnect
 from websockets import ConnectionClosedOK
 
-from warship_manager.config import ENTITY_PATH, RPS, PLAYERS_COUNT
+from warship_manager.config import ENTITY_PATH, RPS
 from warship_manager.data_bus import DataBus
 
 app = FastAPI()

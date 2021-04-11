@@ -6,14 +6,13 @@ const TEXTURE_URL = `http://${HOST}/load_data`;
 const WS_URL = `ws://${HOST}/ws`;
 
 let action = {up: false, down: false, left: false, right: false, shot: false};
-let last_action = {};
-let send_movement = false;
-let player_id = '';
-let player_score = 0;
+let lastAction = {};
+let sendMovement = false;
+let playerId = '';
+let playerScore = 0;
 
-
-let camera_offset_x = 0;
-let camera_offset_y = 0;
+let cameraOffsetX = 0;
+let cameraOffsetY = 0;
 
 
 function evaluate_movement(event, action_flag) {
@@ -35,9 +34,9 @@ function evaluate_movement(event, action_flag) {
             break;
     }
     for (let key in action) {
-        if (last_action[key] !== action[key]) {
-            last_action[key] = action[key];
-            send_movement = true;
+        if (lastAction[key] !== action[key]) {
+            lastAction[key] = action[key];
+            sendMovement = true;
         }
     }
 }
@@ -45,28 +44,23 @@ function evaluate_movement(event, action_flag) {
 function handle_message(event, render) {
     let data = JSON.parse(event.data);
 
-    if (typeof data.player_id === "string") {
-        player_id = data.player_id;
+    if (data.hasOwnProperty('player_id') && typeof data.player_id === "string") {
+        playerId = data.player_id;
     } else {
-        let self_object = data.entities.find(function (elem) {
-            return elem.id === player_id
-        })
-        if (self_object) {
-            player_score = self_object.score;
+        let selfObject = data.entities.find((elem) => elem.id === playerId)
+        if (selfObject) {
+            playerScore = selfObject.score;
         }
+        let currentEntities = new Set();
         data.entities.forEach(elem => {
             if (elem.c) {
-                let coords = elem.c.split(' ')
-                elem.x = coords[0]
-                elem.y = coords[1]
-                elem.r = coords[2]
+                [elem.x, elem.y, elem.r, ] = elem.c.split(' ')
             } else {
-                elem.x = 0
-                elem.y = 0
-                elem.r = 0
+                [elem.x, elem.y, elem.r] = [0, 0, 0]
             }
-        })
-        render.render_screen(self_object, data.entities, data.frame_time);
+            currentEntities.add(elem.id);
+        });
+        render.render_screen(selfObject, data.entities, data.frame_time);
     }
 }
 
@@ -78,9 +72,9 @@ function handle_open_socket(event) {
 
     socket.send(JSON.stringify({'name': player_name}));
     setInterval(function () {
-        if (send_movement) {
+        if (sendMovement) {
             socket.send(JSON.stringify(action));
-            send_movement = false;
+            sendMovement = false;
         }
     }, 100);
 }
