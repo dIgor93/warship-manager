@@ -1,4 +1,3 @@
-const SEA_COLOR = "#3d9ae3";
 const AREA_WIDTH = 3000;
 const AREA_HEIGHT = 3000;
 const HOST = 'localhost:8000'
@@ -54,7 +53,7 @@ function handle_message(event, render) {
         let currentEntities = new Set();
         data.entities.forEach(elem => {
             if (elem.c) {
-                [elem.x, elem.y, elem.r, ] = elem.c.split(' ')
+                [elem.x, elem.y, elem.r,] = elem.c.split(' ')
             } else {
                 [elem.x, elem.y, elem.r] = [0, 0, 0]
             }
