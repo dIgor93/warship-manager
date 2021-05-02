@@ -1,7 +1,9 @@
 ### description
-Frontend of 2d browser multiplayer game for PC about Spaceships 
+
+Frontend of 2d browser multiplayer game for PC about Spaceships
 
 ### related repos
+
 https://github.com/dIgor93/warship
 
 ### for developers

@@ -1,0 +1,39 @@
+{
+  "frames": {
+    "sprite_shoot_blue0.png": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 5,
+        "h": 36
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 5,
+        "h": 36
+      },
+      "sourceSize": {
+        "w": 5,
+        "h": 36
+      }
+    }
+  },
+  "animations": {
+    "shoot": [
+      "sprite_shoot_blue0.png"
+    ]
+  },
+  "meta": {
+    "app": "https://github.com/piskelapp/piskel/",
+    "version": "1.0",
+    "image": "sprite_shoot_blue.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 5,
+      "h": 36
+    }
+  }
+}

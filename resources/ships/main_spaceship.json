@@ -1,0 +1,37 @@
+{
+  "type": "ship",
+  "animation_sprite": "sprite_main_spaceship",
+  "hp_max": 100,
+  "mobility": 1,
+  "speed": 200,
+  "acceleration": 150,
+  "shot_speed": 6,
+  "bullet_damage": 10,
+  "bullet_speed": 500,
+  "offset_x": -32,
+  "offset_y": -32,
+  "width": 64,
+  "height": 64,
+  "points": [
+    {
+      "x": 18,
+      "y": 5
+    },
+    {
+      "x": 32,
+      "y": 5
+    },
+    {
+      "x": 50,
+      "y": 26
+    },
+    {
+      "x": 25,
+      "y": 71
+    },
+    {
+      "x": 0,
+      "y": 26
+    }
+  ]
+}
