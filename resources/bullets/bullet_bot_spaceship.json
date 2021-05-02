@@ -1,7 +1,7 @@
 {
   "type": "bullet",
   "hp_max": 100,
-  "texture": "shoot_blue.png",
+  "animation_sprite": "sprite_shoot_blue",
   "offset_x": -3,
   "offset_y": -35,
   "width": 5,

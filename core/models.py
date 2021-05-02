@@ -21,23 +21,26 @@ class SpaceShipModel(GeometryParams):
     shot_speed: float
     bullet_damage: int
     bullet_speed: int
+    animation_sprite: str = None
 
 
 @dataclass
 class BulletModel(GeometryParams):
     content_id: str
     hp_max: int
-    texture: str
+    animation_sprite: str = None
 
 
 @dataclass
-class BonusModel(BulletModel):
-    ...
+class BonusModel(GeometryParams):
+    content_id: str
+    hp_max: int
+    texture: str
 
 
 @dataclass
 class StaticsModel(GeometryParams):
     content_id: str
-    texture: str
     x: int
     y: int
+    animation_sprite: str = None

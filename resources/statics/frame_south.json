@@ -1,6 +1,6 @@
 {
   "type": "static",
-  "texture": "alpha_stub.png",
+  "animation_sprite": "sprite_bot_spaceship",
   "x": 0,
   "y": 0,
   "offset_x": 0,

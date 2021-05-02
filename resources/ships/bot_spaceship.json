@@ -1,5 +1,6 @@
 {
   "type": "ship",
+  "animation_sprite": "sprite_bot_spaceship",
   "hp_max": 100,
   "mobility": 0.5,
   "speed": 120,

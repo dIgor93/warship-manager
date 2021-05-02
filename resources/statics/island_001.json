@@ -1,12 +1,12 @@
 {
-  "type": "island",
-  "texture": "alpha_stub.png",
+  "type": "static",
+  "animation_sprite": "sprite_island",
   "x": 0,
   "y": 2544,
   "offset_x": 0,
   "offset_y": 0,
-  "width": 0,
-  "height": 0,
+  "width": 704,
+  "height": 456,
   "points": [
     {
       "x": 2,

@@ -1,6 +1,6 @@
 {
   "frames": {
-    "spaceship0.png": {
+    "sprite_bot_spaceship0.png": {
       "frame": {
         "x": 0,
         "y": 0,
@@ -20,7 +20,7 @@
         "h": 64
       }
     },
-    "spaceship1.png": {
+    "sprite_bot_spaceship1.png": {
       "frame": {
         "x": 64,
         "y": 0,
@@ -40,7 +40,7 @@
         "h": 64
       }
     },
-    "spaceship2.png": {
+    "sprite_bot_spaceship2.png": {
       "frame": {
         "x": 0,
         "y": 64,
@@ -60,7 +60,7 @@
         "h": 64
       }
     },
-    "spaceship3.png": {
+    "sprite_bot_spaceship3.png": {
       "frame": {
         "x": 64,
         "y": 64,
@@ -83,16 +83,16 @@
   },
   "animations": {
     "go_ahead": [
-      "spaceship0.png",
-      "spaceship1.png",
-      "spaceship2.png",
-      "spaceship3.png"
+      "sprite_bot_spaceship0.png",
+      "sprite_bot_spaceship1.png",
+      "sprite_bot_spaceship2.png",
+      "sprite_bot_spaceship3.png"
     ]
   },
   "meta": {
     "app": "https://github.com/piskelapp/piskel/",
     "version": "1.0",
-    "image": "spaceship.png",
+    "image": "sprite_bot_spaceship.png",
     "format": "RGBA8888",
     "size": {
       "w": 64,

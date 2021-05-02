@@ -1,7 +1,6 @@
 const TEXTURE_PATH = 'static/img';
 const SPACESHIPS = ['SpaceShip', 'Bot'];
 const SPRITE_MAP_PATH = 'static/spriteMaps';
-const SPACECOLOR = '#0a0a0e'
 let player_object = null;
 
 
@@ -13,7 +12,7 @@ class Render {
         this.app = new PIXI.Application({
             width: this.screen_width,
             height: this.screen_height,
-            backgroundColor: SPACECOLOR.replace('#', '0x')
+            backgroundColor: '0x0a0a0e'
         });
         document.body.appendChild(this.app.view);
 
@@ -36,8 +35,6 @@ class Render {
     }
 
     async init() {
-        this.ship_manager = new SpaceShipManager();
-
         this.resource_data = await fetch(TEXTURE_URL)
             .then((res) => res.json())
             .catch(err => {
@@ -57,6 +54,11 @@ class Render {
 
         this.bonus = new Bonus(this.screen_width - 60, 160);
         this.hud.addChild(this.bonus.getContainer());
+
+        this.ship_manager = new SpaceShipManager(this.resource_data);
+        this.bullet_manager = new ObjectManager(this.resource_data);
+        this.static_manager = new StaticManager(this.resource_data);
+        this.static_manager.registerAll(this.resource_data, this.stage)
     }
 
     info_text(x, y) {
@@ -144,7 +146,11 @@ class Render {
             this.ship_manager.registerNew(innerObjects, newEntityIds, this.stage);
             this.ship_manager.cleanup(removedEntityIds);
 
+            this.bullet_manager.registerNew(innerObjects, newEntityIds, this.stage);
+            this.bullet_manager.cleanup(removedEntityIds);
+
             this.ship_manager.update(innerObjects);
+            this.bullet_manager.update(innerObjects);
             this.minimap.update(player_object, innerObjects);
             this.bonus.update(player_object.bonuses);
 
@@ -338,9 +344,12 @@ class Bonus {
 }
 
 class SpaceShipManager {
-    constructor() {
-        PIXI.Loader.shared.add('SpaceShip', `${SPRITE_MAP_PATH}/spaceship_main.json`);
-        PIXI.Loader.shared.add('Bot', `${SPRITE_MAP_PATH}/spaceship.json`);
+    constructor(resources) {
+        for (let key in resources) {
+            if (resources[key]['type'] === 'ship') {
+                PIXI.Loader.shared.add(key, `${SPRITE_MAP_PATH}/${resources[key]['animation_sprite']}.json`);
+            }
+        }
         this.spacehips = {};
     }
 
@@ -418,8 +427,8 @@ class SpaceShipManager {
     registerNew(innerObjects, newEntityIds, stage) {
         innerObjects.forEach((elem) => {
             if (newEntityIds.has(elem.id)) {
-                if (['SpaceShip', 'Bot'].includes(elem.type)) {
-                    stage.addChild(this.createSpaceship(elem.id, elem.type, elem.name, player_object === elem))
+                if (SPACESHIPS.includes(elem.type)) {
+                    stage.addChild(this.createSpaceship(elem.id, elem.context_id, elem.name, player_object === elem))
                 }
             }
         })
@@ -459,9 +468,124 @@ class SpaceShipManager {
 }
 
 class StaticManager {
-    constructor() {
-        this.resource_data[elem].pixi_texture = PIXI.Texture.from(
-            `${TEXTURE_PATH}/${this.resource_data[elem].texture}`
-        )
+    constructor(resources) {
+        for (let key in resources) {
+            if (resources[key]['type'] === 'static') {
+                PIXI.Loader.shared.add(key, `${SPRITE_MAP_PATH}/${resources[key]['animation_sprite']}.json`);
+            }
+        }
+    }
+
+    createStatic(id, type, x, y) {
+        const mainContainer = new PIXI.Container()
+        PIXI.Loader.shared.load(setup)
+
+        function setup() {
+            const animations = PIXI.Loader.shared.resources[type].spritesheet.animations;
+
+            const animatedSprite = new PIXI.AnimatedSprite(animations['stay']);
+            animatedSprite.visible = true;
+            animatedSprite.animationSpeed = 0.1;
+            animatedSprite.play();
+            mainContainer.x = x;
+            mainContainer.y = y;
+            mainContainer.addChild(animatedSprite);
+        }
+        return mainContainer;
+    }
+
+    registerAll(innerObjects, stage) {
+        for (let key in innerObjects) {
+            let elem = innerObjects[key];
+            if (elem['type'] === 'static' && key == 'island_001') {
+                stage.addChild(this.createStatic(elem.id, key, elem.x, elem.y))
+            }
+
+            // const graphics = new PIXI.Graphics();
+            // graphics.beginFill(0xFF3300);
+            // graphics.lineStyle(2, 0xffd900, 1);
+            // let f = true
+            // elem.points.forEach((p) => {
+            //     if (f) graphics.moveTo(elem.x + p.x, elem.y + p.y); else graphics.lineTo(elem.x + p.x, elem.y + p.y);
+            //     f = false;
+            //     graphics.closePath();
+            // })
+            // graphics.endFill();
+            // stage.addChild(graphics)
+        }
+    }
+}
+
+
+class ObjectManager {
+    constructor(resources) {
+        for (let key in resources) {
+            if ((resources[key]['type'] === 'bullet')){
+                PIXI.Loader.shared.add(key, `${SPRITE_MAP_PATH}/${resources[key]['animation_sprite']}.json`);
+            }
+        }
+        this.bullets = {};
+    }
+
+    createBullet(id, type) {
+        const mainContainer = new PIXI.Container()
+        let spaceShipObj = {
+            'type': type,
+            'animations': {},
+            'mainContainer': mainContainer,
+        };
+        PIXI.Loader.shared.load(setup)
+
+        function setup() {
+            const animations = PIXI.Loader.shared.resources[type].spritesheet.animations;
+
+            for (let id in animations) {
+                const animatedSprite = new PIXI.AnimatedSprite(animations[id]);
+                animatedSprite.visible = true;
+                animatedSprite.animationSpeed = 0.1;
+                animatedSprite.anchor.set(0.5);
+                animatedSprite.play();
+                spaceShipObj.animations[id] = animatedSprite
+                spaceShipObj.currentAnimation = id;
+                spaceShipObj.mainContainer.addChild(animatedSprite)
+            }
+        }
+
+        this.bullets[id] = spaceShipObj;
+        return spaceShipObj.mainContainer;
+    }
+    registerNew(innerObjects, newEntityIds, stage) {
+        innerObjects.forEach((elem) => {
+            if (newEntityIds.has(elem.id)) {
+                if (elem.type === 'Bullet') {
+                    stage.addChild(this.createBullet(elem.id, elem.context_id))
+                }
+            }
+        })
+    }
+
+    update(elems) {
+        for (let key in this.bullets) {
+            const sourceElem = elems.find((elem) => elem.id === key)
+            if (sourceElem && this.bullets.hasOwnProperty(sourceElem.id)) {
+                const currElem = this.bullets[sourceElem.id]
+                const currAnim = currElem.currentAnimation;
+
+                if (currElem.animations.hasOwnProperty(currAnim)) {
+                    currElem.animations[currAnim].rotation = sourceElem.r;
+                }
+                currElem.mainContainer.x = sourceElem.x;
+                currElem.mainContainer.y = sourceElem.y;
+            }
+        }
+    }
+
+    cleanup(removedEntityIds) {
+        removedEntityIds.forEach((_id) => {
+            if (this.bullets.hasOwnProperty(_id)) {
+                this.bullets[_id].mainContainer.destroy();
+                delete this.bullets[_id];
+            }
+        })
     }
 }
