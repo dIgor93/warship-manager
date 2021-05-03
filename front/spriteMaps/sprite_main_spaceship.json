@@ -4,89 +4,202 @@
       "frame": {
         "x": 0,
         "y": 0,
-        "w": 64,
-        "h": 64
+        "w": 128,
+        "h": 128
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 64,
-        "h": 64
+        "w": 128,
+        "h": 128
       },
       "sourceSize": {
-        "w": 64,
-        "h": 64
+        "w": 128,
+        "h": 128
       }
     },
     "sprite_main_spaceship1.png": {
       "frame": {
-        "x": 64,
+        "x": 128,
         "y": 0,
-        "w": 64,
-        "h": 64
+        "w": 128,
+        "h": 128
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 64,
-        "h": 64
+        "w": 128,
+        "h": 128
       },
       "sourceSize": {
-        "w": 64,
-        "h": 64
+        "w": 128,
+        "h": 128
       }
     },
     "sprite_main_spaceship2.png": {
       "frame": {
-        "x": 0,
-        "y": 64,
-        "w": 64,
-        "h": 64
+        "x": 256,
+        "y": 0,
+        "w": 128,
+        "h": 128
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 64,
-        "h": 64
+        "w": 128,
+        "h": 128
       },
       "sourceSize": {
-        "w": 64,
-        "h": 64
+        "w": 128,
+        "h": 128
       }
     },
     "sprite_main_spaceship3.png": {
       "frame": {
-        "x": 64,
-        "y": 64,
-        "w": 64,
-        "h": 64
+        "x": 0,
+        "y": 128,
+        "w": 128,
+        "h": 128
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 64,
-        "h": 64
+        "w": 128,
+        "h": 128
       },
       "sourceSize": {
-        "w": 64,
-        "h": 64
+        "w": 128,
+        "h": 128
+      }
+    },
+    "sprite_main_spaceship4.png": {
+      "frame": {
+        "x": 128,
+        "y": 128,
+        "w": 128,
+        "h": 128
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 128,
+        "h": 128
+      },
+      "sourceSize": {
+        "w": 128,
+        "h": 128
+      }
+    },
+    "sprite_main_spaceship5.png": {
+      "frame": {
+        "x": 256,
+        "y": 128,
+        "w": 128,
+        "h": 128
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 128,
+        "h": 128
+      },
+      "sourceSize": {
+        "w": 128,
+        "h": 128
+      }
+    },
+    "sprite_main_spaceship6.png": {
+      "frame": {
+        "x": 0,
+        "y": 256,
+        "w": 128,
+        "h": 128
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 128,
+        "h": 128
+      },
+      "sourceSize": {
+        "w": 128,
+        "h": 128
+      }
+    },
+    "sprite_main_spaceship7.png": {
+      "frame": {
+        "x": 128,
+        "y": 256,
+        "w": 128,
+        "h": 128
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 128,
+        "h": 128
+      },
+      "sourceSize": {
+        "w": 128,
+        "h": 128
+      }
+    },
+    "sprite_main_spaceship8.png": {
+      "frame": {
+        "x": 256,
+        "y": 256,
+        "w": 128,
+        "h": 128
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 128,
+        "h": 128
+      },
+      "sourceSize": {
+        "w": 128,
+        "h": 128
       }
     }
   },
   "animations": {
-    "default": [
+    "forward": [
       "sprite_main_spaceship0.png",
-      "sprite_main_spaceship1.png",
+      "sprite_main_spaceship1.png"
+    ],
+    "backward": [
       "sprite_main_spaceship2.png",
       "sprite_main_spaceship3.png"
+    ],
+    "forward_boost": [
+      "sprite_main_spaceship4.png",
+      "sprite_main_spaceship5.png"
+    ],
+    "backward_boost": [
+      "sprite_main_spaceship6.png",
+      "sprite_main_spaceship7.png"
+    ],
+    "default": [
+      "sprite_main_spaceship8.png"
     ]
   },
   "meta": {
@@ -95,8 +208,8 @@
     "image": "sprite_main_spaceship.png",
     "format": "RGBA8888",
     "size": {
-      "w": 128,
-      "h": 128
+      "w": 384,
+      "h": 384
     }
   }
 }

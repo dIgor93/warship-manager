@@ -88,6 +88,9 @@ class CasualPhysics(Physics):
         self.vector_motion.switch_current()
         self.angle_motion.switch_current()
 
+    def get_moving(self):
+        return self.vector_motion._moving
+
 
 class LinePhysics(Physics):
     def __init__(self, x: float, y: float, r: float):

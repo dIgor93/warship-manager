@@ -118,3 +118,12 @@ class BonusSystem:
 
     def get_info(self):
         return {'bonuses': [x.get_info() for x in self._bonuses]}
+
+    def check_for(self, bonus_context_name):
+        for bonus in self._bonuses:
+            if bonus.get_info()['context'] == bonus_context_name:
+                return True
+        else:
+            return False
+
+

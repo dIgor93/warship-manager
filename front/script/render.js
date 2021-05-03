@@ -372,10 +372,9 @@ class SpaceShipManager {
             for (let id in animations) {
                 const animatedSprite = new PIXI.AnimatedSprite(animations[id]);
                 animatedSprite.visible = false;
-                animatedSprite.animationSpeed = 0.1;
+                animatedSprite.animationSpeed = 0.2;
                 animatedSprite.anchor.set(0.5);
                 spaceShipObj.animations[id] = animatedSprite
-                spaceShipObj.currentAnimation = id;
                 spaceShipObj.mainContainer.addChild(animatedSprite)
             }
         }
@@ -441,16 +440,26 @@ class SpaceShipManager {
             const sourceElem = elements.find((elem) => elem.id === key)
             if (sourceElem && this.spacehips.hasOwnProperty(sourceElem.id)) {
                 const currElem = this.spacehips[sourceElem.id]
-                const currAnim = currElem.currentAnimation;
 
-                if (currElem.animations.hasOwnProperty(currAnim)) {
-                    currElem.animations[currAnim].visible = true;
-                    if (!currElem.animations[currAnim].playing) {
-                        currElem.animations[currAnim].play();
-                    }
-                    currElem.animations[currAnim].rotation = sourceElem.r;
+                let animForPlay = sourceElem.state
+                if (!currElem.animations[animForPlay]) {
+                    animForPlay = 'default'
                 }
 
+                for (let animName in currElem.animations) {
+                    if (animName === animForPlay) {
+                        currElem.animations[animName].visible = true;
+                        if (!currElem.animations[animName].playing) {
+                            currElem.animations[animName].play();
+                        }
+                        currElem.animations[animName].rotation = sourceElem.r;
+                    } else {
+                        currElem.animations[animName].visible = false;
+                        if (currElem.animations[animName].playing) {
+                            currElem.animations[animName].stop();
+                        }
+                    }
+                }
                 currElem.mainContainer.x = sourceElem.x;
                 currElem.mainContainer.y = sourceElem.y;
 
