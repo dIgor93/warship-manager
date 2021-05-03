@@ -42,7 +42,7 @@
     }
   },
   "animations": {
-    "stay": [
+    "default": [
       "sprite_island0.png",
       "sprite_island1.png"
     ]

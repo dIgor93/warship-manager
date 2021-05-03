@@ -38,6 +38,7 @@ class SpaceShip(ee.Entity):
     def set_shooting(self, flag):
         if flag:
             self.gun_state.is_shooting = True
+            self.state = 'shooting'
         else:
             self.gun_state.is_shooting = False
 

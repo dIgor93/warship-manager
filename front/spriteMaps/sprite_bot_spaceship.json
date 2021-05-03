@@ -82,7 +82,7 @@
     }
   },
   "animations": {
-    "go_ahead": [
+    "default": [
       "sprite_bot_spaceship0.png",
       "sprite_bot_spaceship1.png",
       "sprite_bot_spaceship2.png",
