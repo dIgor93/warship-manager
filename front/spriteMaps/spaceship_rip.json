@@ -1,0 +1,39 @@
+{
+  "frames": {
+    "spaceship0.png": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 246,
+        "h": 298
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 246,
+        "h": 298
+      },
+      "sourceSize": {
+        "w": 246,
+        "h": 298
+      }
+    }
+  },
+  "animations": {
+    "default": [
+      "spaceship0.png"
+    ]
+  },
+  "meta": {
+    "app": "https://github.com/piskelapp/piskel/",
+    "version": "1.0",
+    "image": "spaceship_rip.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 256,
+      "h": 256
+    }
+  }
+}

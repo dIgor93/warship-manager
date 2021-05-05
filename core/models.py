@@ -35,7 +35,7 @@ class BulletModel(GeometryParams):
 class BonusModel(GeometryParams):
     content_id: str
     hp_max: int
-    texture: str
+    animation_sprite: str = None
 
 
 @dataclass

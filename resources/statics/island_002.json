@@ -1,6 +1,6 @@
 {
   "type": "static",
-  "animation_sprite": "sprite_main_spaceship",
+  "animation_sprite": "spaceship_rip",
   "x": 2200,
   "y": 2360,
   "offset_x": 0,

@@ -1,6 +1,6 @@
 {
   "frames": {
-    "sprite_main_spaceship0.png": {
+    "sprite_orange_spaceship0.png": {
       "frame": {
         "x": 0,
         "y": 0,
@@ -20,7 +20,7 @@
         "h": 128
       }
     },
-    "sprite_main_spaceship1.png": {
+    "sprite_orange_spaceship1.png": {
       "frame": {
         "x": 128,
         "y": 0,
@@ -40,7 +40,7 @@
         "h": 128
       }
     },
-    "sprite_main_spaceship2.png": {
+    "sprite_orange_spaceship2.png": {
       "frame": {
         "x": 256,
         "y": 0,
@@ -60,7 +60,7 @@
         "h": 128
       }
     },
-    "sprite_main_spaceship3.png": {
+    "sprite_orange_spaceship3.png": {
       "frame": {
         "x": 0,
         "y": 128,
@@ -80,7 +80,7 @@
         "h": 128
       }
     },
-    "sprite_main_spaceship4.png": {
+    "sprite_orange_spaceship4.png": {
       "frame": {
         "x": 128,
         "y": 128,
@@ -100,7 +100,7 @@
         "h": 128
       }
     },
-    "sprite_main_spaceship5.png": {
+    "sprite_orange_spaceship5.png": {
       "frame": {
         "x": 256,
         "y": 128,
@@ -120,7 +120,7 @@
         "h": 128
       }
     },
-    "sprite_main_spaceship6.png": {
+    "sprite_orange_spaceship6.png": {
       "frame": {
         "x": 0,
         "y": 256,
@@ -140,7 +140,7 @@
         "h": 128
       }
     },
-    "sprite_main_spaceship7.png": {
+    "sprite_orange_spaceship7.png": {
       "frame": {
         "x": 128,
         "y": 256,
@@ -160,7 +160,7 @@
         "h": 128
       }
     },
-    "sprite_main_spaceship8.png": {
+    "sprite_orange_spaceship8.png": {
       "frame": {
         "x": 256,
         "y": 256,
@@ -183,29 +183,29 @@
   },
   "animations": {
     "forward": [
-      "sprite_main_spaceship0.png",
-      "sprite_main_spaceship1.png"
+      "sprite_orange_spaceship0.png",
+      "sprite_orange_spaceship1.png"
     ],
     "backward": [
-      "sprite_main_spaceship2.png",
-      "sprite_main_spaceship3.png"
+      "sprite_orange_spaceship2.png",
+      "sprite_orange_spaceship3.png"
     ],
     "forward_boost": [
-      "sprite_main_spaceship4.png",
-      "sprite_main_spaceship5.png"
+      "sprite_orange_spaceship4.png",
+      "sprite_orange_spaceship5.png"
     ],
     "backward_boost": [
-      "sprite_main_spaceship6.png",
-      "sprite_main_spaceship7.png"
+      "sprite_orange_spaceship6.png",
+      "sprite_orange_spaceship7.png"
     ],
     "default": [
-      "sprite_main_spaceship8.png"
+      "sprite_orange_spaceship8.png"
     ]
   },
   "meta": {
     "app": "https://github.com/piskelapp/piskel/",
     "version": "1.0",
-    "image": "sprite_main_spaceship.png",
+    "image": "sprite_orange_spaceship.png",
     "format": "RGBA8888",
     "size": {
       "w": 384,

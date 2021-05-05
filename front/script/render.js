@@ -514,7 +514,7 @@ class ObjectManager {
 
     registerNew(innerObjects, newEntityIds) {
         innerObjects.forEach((elem) => {
-            if ((newEntityIds.has(elem.id)) && (elem.type === 'Bullet')) {
+            if ((newEntityIds.has(elem.id)) && (![...SPACESHIPS, "bullet", "static"].includes(elem.type))) {
                 let animatedSprite = null;
                 PIXI.Loader.shared.load(function () {
                     const animations = PIXI.Loader.shared.resources[elem.context_id].spritesheet.animations;

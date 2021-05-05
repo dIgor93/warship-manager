@@ -1,6 +1,6 @@
 {
   "type": "static",
-  "animation_sprite": "sprite_bot_spaceship",
+  "animation_sprite": "asteroid_big",
   "x": 1500,
   "y": 1000,
   "offset_x": 0,
