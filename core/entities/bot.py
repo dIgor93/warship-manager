@@ -1,5 +1,5 @@
 import uuid
-from random import randint
+from random import randint, choice
 
 import core.entities as be
 from core.models import SpaceShipModel
@@ -22,7 +22,7 @@ class Bot(be.SpaceShip):
             pass
         elif isinstance(entity, be.Statics):
             self.action_recorder.clear_pool()
-            self.action_recorder.add_to_pool(randint(20, 250), self.set_moving, randint(-1, 1), 0)
+            self.action_recorder.add_to_pool(randint(20, 250), self.set_moving, randint(-1, 1), choice([1, 0, -1]))
             self.action_recorder.add_to_pool(150, self.set_moving, randint(-1, 1), 1)
             self.action_recorder.add_to_pool(250, self.set_moving, randint(-1, 1), 1)
             self.action_recorder.add_to_pool(100, self.set_moving, randint(-1, 1), 1)

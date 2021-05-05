@@ -1,7 +1,7 @@
 {
   "type": "bonus",
   "hp_max": 100,
-  "texture": "shoot_bonus.png",
+  "animation_sprite": "bonus_shoot",
   "offset_x": -54,
   "offset_y": -50,
   "width": 65,

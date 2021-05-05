@@ -1,102 +1,100 @@
 {
   "frames": {
-    "sprite_main_spaceship0.png": {
+    "bonus0.png": {
       "frame": {
         "x": 0,
         "y": 0,
-        "w": 64,
-        "h": 64
+        "w": 128,
+        "h": 128
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 64,
-        "h": 64
+        "w": 128,
+        "h": 128
       },
       "sourceSize": {
-        "w": 64,
-        "h": 64
+        "w": 128,
+        "h": 128
       }
     },
-    "sprite_main_spaceship1.png": {
+    "bonus1.png": {
       "frame": {
-        "x": 64,
+        "x": 128,
         "y": 0,
-        "w": 64,
-        "h": 64
+        "w": 128,
+        "h": 128
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 64,
-        "h": 64
+        "w": 128,
+        "h": 128
       },
       "sourceSize": {
-        "w": 64,
-        "h": 64
+        "w": 128,
+        "h": 128
       }
     },
-    "sprite_main_spaceship2.png": {
+    "bonus2.png": {
       "frame": {
         "x": 0,
-        "y": 64,
-        "w": 64,
-        "h": 64
+        "y": 128,
+        "w": 128,
+        "h": 128
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 64,
-        "h": 64
+        "w": 128,
+        "h": 128
       },
       "sourceSize": {
-        "w": 64,
-        "h": 64
+        "w": 128,
+        "h": 128
       }
     },
-    "sprite_main_spaceship3.png": {
+    "bonus3.png": {
       "frame": {
-        "x": 64,
-        "y": 64,
-        "w": 64,
-        "h": 64
+        "x": 128,
+        "y": 128,
+        "w": 128,
+        "h": 128
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 64,
-        "h": 64
+        "w": 128,
+        "h": 128
       },
       "sourceSize": {
-        "w": 64,
-        "h": 64
+        "w": 128,
+        "h": 128
       }
     }
   },
   "animations": {
-    "go_ahead": [
-      "sprite_main_spaceship0.png",
-      "sprite_main_spaceship1.png",
-      "sprite_main_spaceship2.png",
-      "sprite_main_spaceship3.png"
+    "default": [
+      "bonus0.png",
+      "bonus1.png"
     ]
   },
   "meta": {
     "app": "https://github.com/piskelapp/piskel/",
     "version": "1.0",
-    "image": "sprite_main_spaceship.png",
+    "image": "bonus.png",
     "format": "RGBA8888",
     "size": {
-      "w": 128,
-      "h": 128
+      "w": 256,
+      "h": 256
     }
   }
 }

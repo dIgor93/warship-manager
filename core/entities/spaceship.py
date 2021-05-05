@@ -60,6 +60,18 @@ class SpaceShip(ee.Entity):
         self.shooting(t)
         self.__bonus_system.update(t)
 
+        _moving = self.physics.get_moving()
+        if self.__bonus_system.check_for('fast_egg'):
+            if _moving == 1:
+                self.state = 'forward_boost'
+            elif _moving == -1:
+                self.state = 'backward_boost'
+        else:
+            if _moving == 1:
+                self.state = 'forward'
+            elif _moving == -1:
+                self.state = 'backward'
+
     def get_info(self):
         data = super(SpaceShip, self).get_info()
         additional_info = {'hp': self.hp,

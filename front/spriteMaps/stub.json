@@ -1,0 +1,39 @@
+{
+  "frames": {
+    "stub0.png": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 1,
+        "h": 1
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 1,
+        "h": 1
+      },
+      "sourceSize": {
+        "w": 1,
+        "h": 1
+      }
+    }
+  },
+  "animations": {
+    "default": [
+      "stub0.png"
+    ]
+  },
+  "meta": {
+    "app": "https://github.com/piskelapp/piskel/",
+    "version": "1.0",
+    "image": "stub.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 256,
+      "h": 256
+    }
+  }
+}

@@ -1,6 +1,6 @@
 {
   "type": "ship",
-  "animation_sprite": "sprite_main_spaceship",
+  "animation_sprite": "sprite_orange_spaceship",
   "hp_max": 100,
   "mobility": 1,
   "speed": 200,

@@ -8,6 +8,7 @@ class Entity:
         self.id = f'entity-{str(uuid.uuid1())[:8]}'
         self.hp = 1
         self.context_id = context
+        self.state = 'default'
         self.physics: CasualPhysics = CasualPhysics(x, y, r)
 
     @property
@@ -23,6 +24,7 @@ class Entity:
         return self.physics.r
 
     def next(self, t: float):
+        self.state = 'default'
         self.physics.update(t)
 
     def action_on_collision(self, entity):
@@ -36,7 +38,8 @@ class Entity:
         return {'id': self.id,
                 'type': type(self).__name__,
                 'c': f'{int(self.x)} {int(self.y)} {round(self.r, 2)}',
-                'context_id': self.context_id
+                'context_id': self.context_id,
+                'state': self.state
                 }
 
     def on_dead(self):

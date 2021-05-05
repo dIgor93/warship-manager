@@ -4,7 +4,7 @@ import time
 import config
 from core.effects import EffectFactory
 from core.endpoint import Endpoint
-from core.entities import SpaceShip
+from core.entities import SpaceShip, Statics
 from core.entity_manager import EntityManager
 from core.physics_system import PhysicsSystem
 from core.scheduler import Scheduler
@@ -19,8 +19,6 @@ class Game:
         self.resources = ResourceStorage()
         self.scheduler = Scheduler()
         self.effects = EffectFactory()
-
-    def init_scene(self):
         self.em.load_statics()
 
     def exec_step(self, time_delta):
@@ -57,6 +55,7 @@ class Game:
             for pl_id, pl_data in curr_step_players.items():
                 player_obj: SpaceShip = self.em.players.get(pl_id)
                 if player_obj:
+                    pass
                     self.scheduler.add(player_obj,
                                        SpaceShip.set_shooting,
                                        pl_data.get('shooting'))
@@ -78,7 +77,6 @@ class Game:
 async def main_game(data_bus):
     print('Core game started.')
     game = Game(data_bus)
-    game.init_scene()
     run_generator = game.run()
     while True:
         delay = next(run_generator)
