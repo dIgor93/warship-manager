@@ -32,7 +32,27 @@ class Render {
         this.game_started = false;
         this.score = 0;
         this.player_object = null;
+
+        this.ship_manager = null
+        this.static_manager = null
+        this.object_manager = null
     }
+
+    init_managers(root) {
+        root.ship_manager = new SpaceShipManager();
+        root.static_manager = new StaticManager();
+        root.object_manager = new ObjectManager(root.stage);
+    }
+
+    load_resources(cb) {
+        for (let key in this.resource_data) {
+            if (this.resource_data[key].hasOwnProperty('animation_sprite')) {
+                PIXI.Loader.shared.add(key, `${SPRITE_MAP_PATH}/${this.resource_data[key].animation_sprite}.json`);
+            }
+        }
+        cb(this)
+    }
+
 
     async init() {
         this.resource_data = await fetch(TEXTURE_URL)
@@ -41,12 +61,7 @@ class Render {
                 throw err
             });
 
-        for (let key in this.resource_data) {
-            if (this.resource_data[key].hasOwnProperty('animation_sprite')) {
-                PIXI.Loader.shared.add(key, `${SPRITE_MAP_PATH}/${this.resource_data[key].animation_sprite}.json`);
-            }
-        }
-
+        this.load_resources(this.init_managers)
         this.init_stars();
 
         this.minimap = new Minimap(this.screen_width, this.screen_height, 250);
@@ -61,10 +76,6 @@ class Render {
         this.bonus = new Bonus(this.screen_width - 60, 160);
         this.hud.addChild(this.bonus.getContainer());
 
-        this.ship_manager = new SpaceShipManager();
-        this.bullet_manager = new ObjectManager(this.stage);
-
-        this.static_manager = new StaticManager();
         this.static_manager.registerAll(this.resource_data, this.stage)
     }
 
@@ -153,11 +164,11 @@ class Render {
             this.ship_manager.registerNew(innerObjects, newEntityIds, this.stage);
             this.ship_manager.cleanup(removedEntityIds);
 
-            this.bullet_manager.registerNew(innerObjects, newEntityIds, this.stage);
-            this.bullet_manager.cleanup(removedEntityIds);
+            this.object_manager.registerNew(innerObjects, newEntityIds, this.stage);
+            this.object_manager.cleanup(removedEntityIds);
 
             this.ship_manager.update(innerObjects);
-            this.bullet_manager.update(innerObjects);
+            this.object_manager.update(innerObjects);
             this.minimap.update(player_object, innerObjects);
             this.bonus.update(player_object.bonuses);
 
