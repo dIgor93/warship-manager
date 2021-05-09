@@ -496,9 +496,6 @@ class ObjectManager {
             if ((newEntityIds.has(elem.id)) && (![...SPACESHIPS].includes(elem.type))) {
 
                 const animations = PIXI.Loader.shared.resources[elem.context_id]
-                if (!animations.hasOwnProperty('spritesheet')) {
-                    return;
-                }
                 let animatedSprite = new PIXI.AnimatedSprite(animations.spritesheet.animations['default']);
                 animatedSprite.visible = true;
                 animatedSprite.animationSpeed = 0.1;
@@ -551,9 +548,7 @@ class ObjectManager {
         const objects = this.objects
 
         const animations = PIXI.Loader.shared.resources[contextId]
-        if (!animations.hasOwnProperty('spritesheet')) {
-            return;
-        }
+
         if (animations.spritesheet.animations.hasOwnProperty('dead')) {
             let animatedSprite = new PIXI.AnimatedSprite(animations.spritesheet.animations['dead']);
             animatedSprite.visible = true;
