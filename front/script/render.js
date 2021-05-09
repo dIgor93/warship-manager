@@ -2,7 +2,7 @@ const TEXTURE_PATH = 'static/img';
 const SPACESHIPS = ['SpaceShip', 'Bot'];
 const SPRITE_MAP_PATH = 'static/spriteMaps';
 let player_object = null;
-
+let resources = {};
 
 class Render {
     constructor() {
@@ -12,7 +12,7 @@ class Render {
         this.app = new PIXI.Application({
             width: this.screen_width,
             height: this.screen_height,
-            backgroundColor: '0x0a0a0e'
+            backgroundColor: '0x1d1e1f'
         });
         document.body.appendChild(this.app.view);
 
@@ -28,40 +28,39 @@ class Render {
         this.hud.height = this.screen_height
         this.app.stage.addChild(this.hud);
 
-        this.resource_data = null;
         this.game_started = false;
         this.score = 0;
         this.player_object = null;
 
-        this.ship_manager = null
-        this.static_manager = null
-        this.object_manager = null
+        this.ship_manager = new SpaceShipManager();
+        this.object_manager = new ObjectManager(this.stage);
     }
 
-    init_managers(root) {
-        root.ship_manager = new SpaceShipManager();
-        root.static_manager = new StaticManager();
-        root.object_manager = new ObjectManager(root.stage);
+    loadJson(url) {
+        return fetch(url)
+            .then(response => {
+                if (response.status == 200) {
+                    return response.json();
+                } else {
+                    throw new Error(response.status);
+                }
+            })
     }
 
-    load_resources(cb) {
-        for (let key in this.resource_data) {
-            if (this.resource_data[key].hasOwnProperty('animation_sprite')) {
-                PIXI.Loader.shared.add(key, `${SPRITE_MAP_PATH}/${this.resource_data[key].animation_sprite}.json`);
-            }
-        }
-        cb(this)
+    add_resources() {
+        this.loadJson(TEXTURE_URL)
+            .then((res_data) => {
+                for (let key in res_data) {
+                    resources[key] = res_data[key]
+                    if (res_data[key].hasOwnProperty('animation_sprite')) {
+                        PIXI.Loader.shared.add(key, `${SPRITE_MAP_PATH}/${res_data[key].animation_sprite}.json`);
+                    }
+                }
+            })
     }
-
 
     async init() {
-        this.resource_data = await fetch(TEXTURE_URL)
-            .then((res) => res.json())
-            .catch(err => {
-                throw err
-            });
-
-        this.load_resources(this.init_managers)
+        this.add_resources()
         this.init_stars();
 
         this.minimap = new Minimap(this.screen_width, this.screen_height, 250);
@@ -75,8 +74,6 @@ class Render {
 
         this.bonus = new Bonus(this.screen_width - 60, 160);
         this.hud.addChild(this.bonus.getContainer());
-
-        this.static_manager.registerAll(this.resource_data, this.stage)
     }
 
     info_text(x, y) {
@@ -150,6 +147,7 @@ class Render {
     }
 
     render_screen(innerPlayerObject, innerObjects, frameTime) {
+        PIXI.Loader.shared.load();
         player_object = innerPlayerObject;
         if (player_object) {
             let innerObjIds = new Set(innerObjects.map((elem) => elem.id));
@@ -375,19 +373,15 @@ class SpaceShipManager {
             'nickname': this.nickname(nickname, mainContainer, isMainPlayer),
             'lifeline': this.lifeline(mainContainer),
         };
-        PIXI.Loader.shared.load(setup)
-
-        function setup() {
-            const animations = PIXI.Loader.shared.resources[type].spritesheet.animations;
-
-            for (let id in animations) {
-                const animatedSprite = new PIXI.AnimatedSprite(animations[id]);
-                animatedSprite.visible = false;
-                animatedSprite.animationSpeed = 0.2;
-                animatedSprite.anchor.set(0.5);
-                spaceShipObj.animations[id] = animatedSprite
-                spaceShipObj.mainContainer.addChild(animatedSprite)
-            }
+        const resource = PIXI.Loader.shared.resources[type]
+        const animations = resource.spritesheet.animations;
+        for (let id in animations) {
+            const animatedSprite = new PIXI.AnimatedSprite(animations[id]);
+            animatedSprite.visible = false;
+            animatedSprite.animationSpeed = 0.2;
+            animatedSprite.anchor.set(0.5);
+            spaceShipObj.animations[id] = animatedSprite
+            spaceShipObj.mainContainer.addChild(animatedSprite)
         }
 
         this.spacehips[id] = spaceShipObj;
@@ -489,34 +483,6 @@ class SpaceShipManager {
     }
 }
 
-class StaticManager {
-    createStatic(id, context_id, x, y) {
-        const mainContainer = new PIXI.Container()
-        PIXI.Loader.shared.load(
-            function () {
-                const animations = PIXI.Loader.shared.resources[context_id].spritesheet.animations;
-                const animatedSprite = new PIXI.AnimatedSprite(animations['default']);
-                animatedSprite.visible = true;
-                animatedSprite.animationSpeed = 0.1;
-                animatedSprite.play();
-                mainContainer.x = x;
-                mainContainer.y = y;
-                mainContainer.addChild(animatedSprite);
-            })
-        return mainContainer;
-    }
-
-    registerAll(resourcesMap, stage) {
-        for (let context_id in resourcesMap) {
-            const elem = resourcesMap[context_id];
-            if (elem.type === 'static') {
-                stage.addChild(this.createStatic(elem.id, context_id, elem.x, elem.y))
-            }
-        }
-    }
-}
-
-
 class ObjectManager {
     constructor(stage) {
         this.objects = {};
@@ -525,19 +491,36 @@ class ObjectManager {
 
     registerNew(innerObjects, newEntityIds) {
         innerObjects.forEach((elem) => {
-            if ((newEntityIds.has(elem.id)) && (![...SPACESHIPS, "bullet", "static"].includes(elem.type))) {
-                let animatedSprite = null;
-                PIXI.Loader.shared.load(function () {
-                    const animations = PIXI.Loader.shared.resources[elem.context_id].spritesheet.animations;
-                    animatedSprite = new PIXI.AnimatedSprite(animations['default']);
-                    animatedSprite.visible = true;
-                    animatedSprite.animationSpeed = 0.1;
-                    animatedSprite.anchor.set(0.5);
-                    animatedSprite.play();
-                })
+            if ((newEntityIds.has(elem.id)) && (![...SPACESHIPS].includes(elem.type))) {
+
+                const animations = PIXI.Loader.shared.resources[elem.context_id]
+                let animatedSprite = new PIXI.AnimatedSprite(animations.spritesheet.animations['default']);
+                animatedSprite.visible = true;
+                animatedSprite.animationSpeed = 0.1;
+                const modelInfo = resources[elem.context_id]
+                animatedSprite.anchor.set(
+                    Math.abs(modelInfo['offset_x'] / modelInfo['width']),
+                    Math.abs(modelInfo['offset_y'] / modelInfo['height'])
+                );
+                animatedSprite.play();
+
+                // const graphics = new PIXI.Graphics();
+                // graphics.beginFill(0xFF3300);
+                // graphics.lineStyle(4, 0xffd900, 1);
+                // graphics.moveTo(elem['bounds'][0][0], elem['bounds'][0][1]);
+                //
+                // elem['bounds'].forEach((elem) => {
+                //     graphics.lineTo(elem[0], elem[1]);
+                // })
+                // graphics.closePath();
+                // graphics.endFill();
+                // this.stage.addChild(graphics);
+
                 if (animatedSprite) {
                     this.objects[elem.id] = {'animatedSprite': animatedSprite, 'contextId': elem.context_id}
                     this.stage.addChild(animatedSprite)
+                } else {
+                    console.log(`Animated sprite for ${elem.context_id}, ${elem.id} not found`)
                 }
             }
         })
@@ -561,26 +544,24 @@ class ObjectManager {
         let contextId = this.objects[_id].contextId
         const stage = this.stage
         const objects = this.objects
-        let animatedSprite = null;
-        PIXI.Loader.shared.load(function () {
-            const animations = PIXI.Loader.shared.resources[contextId].spritesheet.animations;
-            if (animations.hasOwnProperty('dead')) {
-                animatedSprite = new PIXI.AnimatedSprite(animations['dead']);
-                animatedSprite.visible = true;
-                animatedSprite.animationSpeed = 0.1;
-                animatedSprite.anchor.set(0.5);
-                animatedSprite.x = elem.x;
-                animatedSprite.y = elem.y;
-                animatedSprite.angle = 360 * Math.random();
-                animatedSprite.loop = false;
-                animatedSprite.play();
-                animatedSprite.onComplete = function () {
-                    this.destroy();
-                }
-                stage.addChild(animatedSprite)
-                objects[elem.id] = {'animatedSprite': animatedSprite, 'contextId': contextId};
+
+        const animations = PIXI.Loader.shared.resources[contextId].spritesheet.animations;
+        if (animations.hasOwnProperty('dead')) {
+            let animatedSprite = new PIXI.AnimatedSprite(animations['dead']);
+            animatedSprite.visible = true;
+            animatedSprite.animationSpeed = 0.1;
+            animatedSprite.anchor.set(0.5);
+            animatedSprite.x = elem.x;
+            animatedSprite.y = elem.y;
+            animatedSprite.angle = 360 * Math.random();
+            animatedSprite.loop = false;
+            animatedSprite.play();
+            animatedSprite.onComplete = function () {
+                this.destroy();
             }
-        })
+            stage.addChild(animatedSprite)
+            objects[elem.id] = {'animatedSprite': animatedSprite, 'contextId': contextId};
+        }
     }
 
     cleanup(removedEntityIds) {

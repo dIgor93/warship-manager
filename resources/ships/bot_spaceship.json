@@ -8,10 +8,10 @@
   "shot_speed": 1.8,
   "bullet_damage": 10,
   "bullet_speed": 400,
-  "offset_x": -35,
-  "offset_y": -31,
+  "offset_x": -37.5,
+  "offset_y": -30,
   "width": 69,
-  "height": 62,
+  "height": 60,
   "points": [
     {
       "x": 30,

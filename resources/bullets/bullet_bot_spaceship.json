@@ -2,7 +2,7 @@
   "type": "bullet",
   "hp_max": 100,
   "animation_sprite": "sprite_shoot_blue",
-  "offset_x": -3,
+  "offset_x": -2.5,
   "offset_y": -35,
   "width": 5,
   "height": 35,
