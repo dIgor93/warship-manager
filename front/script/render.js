@@ -369,31 +369,6 @@ class SpaceShipManager {
         this.spacehips = {};
     }
 
-    createSpaceship(id, type, nickname, isMainPlayer) {
-        const mainContainer = new PIXI.Container()
-        let spaceShipObj = {
-            'type': type,
-            'animations': {},
-            'mainContainer': mainContainer,
-            'nickname': this.nickname(nickname, mainContainer, isMainPlayer),
-            'lifeline': this.lifeline(mainContainer),
-        };
-        const resource = PIXI.Loader.shared.resources[type]
-        const animations = resource.spritesheet.animations;
-        for (let id in animations) {
-            const animatedSprite = new PIXI.AnimatedSprite(animations[id]);
-            animatedSprite.visible = false;
-            animatedSprite.animationSpeed = 0.2;
-            animatedSprite.anchor.set(0.5);
-            spaceShipObj.animations[id] = animatedSprite
-            spaceShipObj.mainContainer.addChild(animatedSprite)
-        }
-
-        this.spacehips[id] = spaceShipObj;
-        spaceShipObj.mainContainer.addChild(spaceShipObj.nickname, spaceShipObj.lifeline);
-        return spaceShipObj.mainContainer;
-    }
-
     nickname(nickname, container, is_main_player) {
         const style = new PIXI.TextStyle({
             fontFamily: 'Courier New',
@@ -439,7 +414,29 @@ class SpaceShipManager {
         innerObjects.forEach((elem) => {
             if (newEntityIds.has(elem.id)) {
                 if (SPACESHIPS.includes(elem.type)) {
-                    stage.addChild(this.createSpaceship(elem.id, elem.context_id, elem.name, player_object === elem))
+
+                    const mainContainer = new PIXI.Container()
+                    let spaceShipObj = {
+                        'type': elem.context_id,
+                        'animations': {},
+                        'mainContainer': mainContainer,
+                        'nickname': this.nickname(elem.name, mainContainer, player_object === elem),
+                        'lifeline': this.lifeline(mainContainer),
+                    };
+
+                    const resource = PIXI.Loader.shared.resources[elem.context_id]
+                        const animations = resource.spritesheet.animations;
+                        for (let id in animations) {
+                            const animatedSprite = new PIXI.AnimatedSprite(animations[id]);
+                            animatedSprite.visible = false;
+                            animatedSprite.animationSpeed = 0.2;
+                            animatedSprite.anchor.set(0.5);
+                            spaceShipObj.animations[id] = animatedSprite
+                            spaceShipObj.mainContainer.addChild(animatedSprite)
+                        }
+                        this.spacehips[elem.id] = spaceShipObj;
+                        spaceShipObj.mainContainer.addChild(spaceShipObj.nickname, spaceShipObj.lifeline);
+                        stage.addChild(spaceShipObj.mainContainer)
                 }
             }
         })
@@ -499,6 +496,9 @@ class ObjectManager {
             if ((newEntityIds.has(elem.id)) && (![...SPACESHIPS].includes(elem.type))) {
 
                 const animations = PIXI.Loader.shared.resources[elem.context_id]
+                if (!animations.hasOwnProperty('spritesheet')) {
+                    return;
+                }
                 let animatedSprite = new PIXI.AnimatedSprite(animations.spritesheet.animations['default']);
                 animatedSprite.visible = true;
                 animatedSprite.animationSpeed = 0.1;
@@ -550,9 +550,12 @@ class ObjectManager {
         const stage = this.stage
         const objects = this.objects
 
-        const animations = PIXI.Loader.shared.resources[contextId].spritesheet.animations;
-        if (animations.hasOwnProperty('dead')) {
-            let animatedSprite = new PIXI.AnimatedSprite(animations['dead']);
+        const animations = PIXI.Loader.shared.resources[contextId]
+        if (!animations.hasOwnProperty('spritesheet')) {
+            return;
+        }
+        if (animations.spritesheet.animations.hasOwnProperty('dead')) {
+            let animatedSprite = new PIXI.AnimatedSprite(animations.spritesheet.animations['dead']);
             animatedSprite.visible = true;
             animatedSprite.animationSpeed = 0.1;
             animatedSprite.anchor.set(0.5);
