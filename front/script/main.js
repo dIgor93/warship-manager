@@ -68,7 +68,6 @@ function handle_close(event, render) {
 }
 
 function handle_open_socket(event) {
-
     socket.send(JSON.stringify({'name': player_name}));
     setInterval(function () {
         if (sendMovement) {
@@ -78,19 +77,18 @@ function handle_open_socket(event) {
     }, 100);
 }
 
-window.onload = function () {
-    async function start() {
-        const render = new Render()
-        await render.init()
-        socket = new WebSocket(WS_URL)
-        socket.addEventListener('message', event => handle_message(event, render));
-        socket.addEventListener('open', event => handle_open_socket(event));
-        socket.addEventListener('close', event => handle_close(event, render));
-        document.addEventListener('keydown', event => evaluate_movement(event, true));
-        document.addEventListener('keyup', event => evaluate_movement(event, false));
-    }
-
-    start().then(function () {
-        console.log("Game started")
-    });
+function startGame() {
+    const render = new Render()
+    render.init()
+        .then(() => {
+            socket = new WebSocket(WS_URL)
+            socket.addEventListener('message', event => handle_message(event, render));
+            socket.addEventListener('open', event => handle_open_socket(event));
+            socket.addEventListener('close', event => handle_close(event, render));
+            document.addEventListener('keydown', event => evaluate_movement(event, true));
+            document.addEventListener('keyup', event => evaluate_movement(event, false));
+            console.log("Game started")
+        })
 }
+
+window.onload = startGame;

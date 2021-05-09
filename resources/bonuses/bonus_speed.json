@@ -4,8 +4,8 @@
   "animation_sprite": "bonus_speed",
   "offset_x": -54,
   "offset_y": -50,
-  "width": 65,
-  "height": 65,
+  "width": 108,
+  "height": 100,
   "points": [
     {
       "x": 25,

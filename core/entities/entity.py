@@ -40,6 +40,7 @@ class Entity:
                 'c': f'{int(self.x)} {int(self.y)} {round(self.r, 2)}',
                 'context_id': self.context_id,
                 'state': self.state
+                # 'bounds': self.physics.bounds
                 }
 
     def on_dead(self):
