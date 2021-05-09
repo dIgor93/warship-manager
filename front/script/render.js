@@ -74,6 +74,7 @@ class Render {
 
         this.bonus = new Bonus(this.screen_width - 60, 160);
         this.hud.addChild(this.bonus.getContainer());
+
     }
 
     info_text(x, y) {
@@ -148,6 +149,10 @@ class Render {
 
     render_screen(innerPlayerObject, innerObjects, frameTime) {
         PIXI.Loader.shared.load();
+        if (!PIXI.Loader.shared.resources['main_spaceship'].spritesheet) {
+            console.log('Not loaded')
+            return;
+        }
         player_object = innerPlayerObject;
         if (player_object) {
             let innerObjIds = new Set(innerObjects.map((elem) => elem.id));
