@@ -1,0 +1,19 @@
+{
+  "type": "bullet",
+  "hp_max": 100,
+  "animation_sprite": "sprite_shoot_red",
+  "offset_x": -2.5,
+  "offset_y": -35,
+  "width": 5,
+  "height": 35,
+  "points": [
+    {
+      "x": 3,
+      "y": 0
+    },
+    {
+      "x": 3,
+      "y": 35
+    }
+  ]
+}

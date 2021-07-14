@@ -1,0 +1,60 @@
+{
+  "frames": {
+    "sprite_island0.png": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 704,
+        "h": 456
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 704,
+        "h": 456
+      },
+      "sourceSize": {
+        "w": 704,
+        "h": 456
+      }
+    },
+    "sprite_island1.png": {
+      "frame": {
+        "x": 0,
+        "y": 456,
+        "w": 704,
+        "h": 456
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 704,
+        "h": 456
+      },
+      "sourceSize": {
+        "w": 704,
+        "h": 456
+      }
+    }
+  },
+  "animations": {
+    "default": [
+      "sprite_island0.png",
+      "sprite_island1.png"
+    ]
+  },
+  "meta": {
+    "app": "https://github.com/piskelapp/piskel/",
+    "version": "1.0",
+    "image": "sprite_island.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 704,
+      "h": 912
+    }
+  }
+}

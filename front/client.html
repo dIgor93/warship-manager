@@ -2,15 +2,14 @@
 <head>
     <meta charset="UTF-8">
     <link href="{{ url_for('static', path='/styles/main.css') }}" rel="stylesheet">
-    <script src="{{ url_for('static', path='/script/main.js') }}"></script>
     <title>steel rebbot</title>
 </head>
 <body>
-<canvas height="800" id="screen" width="1800">
-    <p>Ваш браузер не поддерживает рисование.</p>
-</canvas>
 <script>
     var player_name = '{{ name }}'
 </script>
 </body>
+<script src="{{ url_for('static', path='/script/pixi.js.min') }}"></script>
+<script src="{{ url_for('static', path='/script/render.js') }}"></script>
+<script src="{{ url_for('static', path='/script/main.js') }}"></script>
 </html>
